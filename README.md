@@ -1,12 +1,17 @@
-# MLOps project
+### something
 
-Egorov Gordei, MIPT, Б05-027
+sudo apt-get install gnumeric
+
+ssconvert data/raw.xlsx data/raw.csv
+
+prepare_data.py
+
+
+# MLOps project
 
 Predicting clothing types, training on FashionMNIST dataset
 
-# For teachers
-
-!!! LAST CHANGE WAS 13.01.2023 - FIXED CI TESTS (and dvc pull in general) !!!
+# Quick start
 
 1) train: ```poetry run train```
 
