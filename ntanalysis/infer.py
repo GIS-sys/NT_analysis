@@ -34,12 +34,12 @@ def infer(cfg: DictConfig):
 
     trainer.test(model, datamodule=dm)
     answers = trainer.predict(model, datamodule=dm)
-    answers = np.concatenate(answers, axis=1)
+    answers = np.concatenate(answers)
 
-    t = np.linspace(0, 1, answers.shape[1])
-    plt.plot(t, answers[0, :, cfg.halfinterval], "b")
-    plt.plot(t, answers[1, :, cfg.halfinterval], "g")
-    plt.plot(t, answers[2, :, cfg.halfinterval], "r")
+    t = np.linspace(0, 1, answers.shape[0])
+    plt.plot(t, answers[:, cfg.model.halfinterval], color="blue")
+    plt.plot(t, answers[:, -2], color="green")
+    plt.plot(t, answers[:, -1], color="red")
     plt.show()
 
     return answers

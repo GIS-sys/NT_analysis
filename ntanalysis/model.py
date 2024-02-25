@@ -13,16 +13,23 @@ class MyModel(pl.LightningModule):
         self.save_hyperparameters()
         self.cfg = cfg
         # self.flatten = nn.Flatten()
+        # self.linear_relu_stack = nn.Sequential(
+        #    nn.Linear(cfg.model.halfinterval * 2 + 1, 16),
+        #    nn.Sigmoid(),
+        #    nn.Linear(16, 16),
+        #    nn.Sigmoid(),
+        #    nn.Linear(16, 16),
+        #    nn.Sigmoid(),
+        #    nn.Linear(16, 16),
+        #    nn.Sigmoid(),
+        #    nn.Linear(16, cfg.model.halfinterval * 2 + 1),
+        # )
         self.linear_relu_stack = nn.Sequential(
-            nn.Linear(cfg.model.halfinterval * 2 + 1, 16),
-            nn.Sigmoid(),
-            nn.Linear(16, 16),
-            nn.Sigmoid(),
-            nn.Linear(16, 16),
-            nn.Sigmoid(),
-            nn.Linear(16, 16),
-            nn.Sigmoid(),
-            nn.Linear(16, cfg.model.halfinterval * 2 + 1),
+            nn.Linear(cfg.model.halfinterval * 2 + 1, 11),
+            nn.ReLU(),
+            nn.Linear(11, 11),
+            nn.ReLU(),
+            nn.Linear(11, 1),
         )
         self.loss_fn = nn.MSELoss()
 
@@ -54,7 +61,7 @@ class MyModel(pl.LightningModule):
 
     def predict_step(self, batch: Any, batch_idx: int, dataloader_idx: int = 0) -> Any:
         x, y, pred, _ = self._base_step(batch)
-        return np.stack((x, y, pred))
+        return np.concatenate((x, y, pred), axis=1)
 
     @staticmethod
     def lr_warmup_wrapper(warmup_steps: int, training_steps: int):

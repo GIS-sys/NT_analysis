@@ -21,5 +21,5 @@ class CsvDataset(torch.utils.data.Dataset):
             index - self.halfinterval : index + self.halfinterval + 1, :
         ]
         X = np.asarray(sensors.iloc[:, 9], dtype=np.float32)
-        y = np.asarray(sensors.iloc[:, 10], dtype=np.float32)
+        y = np.asarray(sensors.iloc[self.halfinterval, 10:11], dtype=np.float32)
         return X, y
