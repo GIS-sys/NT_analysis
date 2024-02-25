@@ -33,7 +33,7 @@ data:
     dataloader_num_wokers: 4
     val_size: 0.1
     test_size: 0.2
-    max_dataset_length: 0.1
+    max_dataset_length: 0.2
 
 general:
     seed: 42
@@ -41,7 +41,7 @@ general:
 train:
     learning_rate: 1e-2
     num_warmup_steps: 200
-    num_training_steps: 400
+    num_training_steps: 1200
     grad_accum_steps: 4
     accelerator: auto
     #devices:
