@@ -12,30 +12,30 @@ class MyModel(pl.LightningModule):
         super().__init__()
         self.save_hyperparameters()
         self.cfg = cfg
-        self.flatten = nn.Flatten()
+        # self.flatten = nn.Flatten()
         self.linear_relu_stack = nn.Sequential(
-            nn.Linear(28 * 28, 512),
+            nn.Linear(2, 8),
             nn.ReLU(),
-            nn.Linear(512, 512),
+            nn.Linear(8, 8),
             nn.ReLU(),
-            nn.Linear(512, 10),
+            nn.Linear(8, 1),
         )
-        self.loss_fn = nn.CrossEntropyLoss()
+        self.loss_fn = nn.MSELoss()
 
     def forward(self, x):
-        x = self.flatten(x)
-        logits = self.linear_relu_stack(x)
-        return logits
+        # x = self.flatten(x)
+        pred = self.linear_relu_stack(x)
+        return pred
 
     def training_step(self, batch: Any, batch_idx: int, dataloader_idx=0):
-        X, y = batch
+        X, y = batch[:, 3:5], batch[:, 0:1]
         pred = self(X)
         loss = self.loss_fn(pred, y)
         self.log("train_loss", loss, on_step=True, on_epoch=False, prog_bar=True)
         return {"loss": loss}
 
     def validation_step(self, batch: Any, batch_idx: int, dataloader_idx: int = 0):
-        X, y = batch
+        X, y = batch[:, 3:5], batch[:, 0:1]
         pred = self(X)
         loss = self.loss_fn(pred, y)
         self.log("val_loss", loss, on_step=True, on_epoch=True, prog_bar=True)
