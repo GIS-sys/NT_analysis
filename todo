@@ -1,7 +1,5 @@
-ntanalysis/data.py, ntanalysis/infer.py, ntanalysis/model.py, ntanalysis/train.py - completely new
+ntanalysis/model.py - completely new
 
-ntanalysis/conf/config.yaml - new specific config
 ntanalysis/tests/predict_test.py - rework tests to test different things, like prepare data etc
 
-# do i need to change ntanalysis/utils.py?
 # do we need dvc in commands?

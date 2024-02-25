@@ -1,15 +1,15 @@
 import math
 from datetime import datetime
 
+import hydra
 import matplotlib.pyplot as plt
 import numpy as np
 import openpyxl
 import pandas as pd
+from omegaconf import DictConfig
 from tqdm import tqdm
 
 
-FILENAME_IN = "data/raw.xlsx"
-FILENAME_OUT = "data/out.csv"
 DEBUG_ONLY_FIRST_N_LINES = 999999
 if DEBUG_ONLY_FIRST_N_LINES is not None:
     print(f"WARNING only {DEBUG_ONLY_FIRST_N_LINES=} lines will be processed")
@@ -44,9 +44,9 @@ class Preprocessor:
         self.data = None
 
     @staticmethod
-    def from_excel():
+    def from_excel(filename):
         preprocessor = Preprocessor()
-        lines = Preprocessor.read_excel_gen(FILENAME_IN)
+        lines = Preprocessor.read_excel_gen(filename)
         preprocessor.data = Preprocessor.gen_to_pd(lines, DEBUG_ONLY_FIRST_N_LINES)
         return preprocessor
 
@@ -122,17 +122,18 @@ class Preprocessor:
             lambda row: row.name.weekday(), axis=1
         )
 
-    def to_csv(self):
-        self.data.to_csv(FILENAME_OUT)
+    def to_csv(self, csv_path):
+        self.data.to_csv(csv_path)
 
     def plot(self):
         self.data.plot(y=[col for col in self.data if not col.startswith(COLUMN_TIME)])
         plt.show()
 
 
-def prepare():
+@hydra.main(config_path="conf", config_name="config", version_base="1.3")
+def prepare(cfg: DictConfig):
     # read
-    preprocessor = Preprocessor.from_excel()
+    preprocessor = Preprocessor.from_excel(cfg.data.raw_xlsx)
     # common timeline
     preprocessor.to_common_time()
     # process data
@@ -143,7 +144,7 @@ def prepare():
     preprocessor.expand_columns()
     print(preprocessor.data.head(20))
     # save to file
-    preprocessor.to_csv()
+    preprocessor.to_csv(cfg.data.csv_path)
     # plot
     preprocessor.plot()
 

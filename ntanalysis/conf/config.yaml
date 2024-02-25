@@ -15,7 +15,7 @@ artifacts:
         path: data/
         name: model
     enable_logger: true
-    experiment_name: predict_fashion
+    experiment_name: predict_nt
     mlflow_tracking_uri: "file:./.logs/my-mlflow-logs"
     #mlflow_tracking_uri: "http://gismlops.mlflow"
 
@@ -27,9 +27,11 @@ callbacks:
         lrs: 1e-3
 
 data:
+    csv_path: "data/out.csv"
     batch_size: 256
     dataloader_num_wokers: 4
     val_size: 0.1
+    test_size: 0.2
 
 general:
     seed: 42
@@ -51,5 +53,4 @@ train:
     gradient_clip_val: 1.0
     profiler:
     log_every_n_steps: 32
-    batch_size_finder: false
     detect_anomaly: false

@@ -11,17 +11,15 @@ from omegaconf import DictConfig
 def train(cfg: DictConfig):
     pl.seed_everything(cfg.general.seed)
     dm = MyDataModule(
+        csv_path=cfg.data.csv_path,
         batch_size=cfg.data.batch_size,
         dataloader_num_wokers=cfg.data.dataloader_num_wokers,
         val_size=cfg.data.val_size,
+        test_size=cfg.data.test_size,
     )
     model = MyModel(cfg)
 
     trainer = get_default_trainer(cfg)
-
-    if cfg.train.batch_size_finder:
-        tuner = pl.tuner.Tuner(trainer)
-        tuner.scale_batch_size(model, datamodule=dm, mode="power")
 
     trainer.fit(model, datamodule=dm)
     torch.save(
