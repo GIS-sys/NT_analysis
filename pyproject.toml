@@ -1,6 +1,6 @@
 [tool.poetry]
-name = "gismlops"
-version = "0.0.2"
+name = "ntanalysis"
+version = "0.0.1"
 description = ""
 authors = ["Gordei Egorov <gordeiegorov@gmail.com>"]
 readme = "README.md"
@@ -24,12 +24,12 @@ torch = {version = "^2.0.1+cpu", source = "pytorch"}
 torchvision = {version = "^0.15.2+cpu", source = "pytorch"}
 tqdm = "v4.66.1"
 wandb = "^0.12.21"
-Pillow = "10.1.0"
 tritonclient = {extras = ["http"], version = "2.40.0"}
 
 [tool.poetry.scripts]
-train = "gismlops.commands:_train"
-infer = "gismlops.commands:_infer"
+train = "ntanalysis.commands:_train"
+infer = "ntanalysis.commands:_infer"
+prepare = "ntanalysis.commands:_prepare_data"
 
 [[tool.poetry.source]]
 name = "pytorch"

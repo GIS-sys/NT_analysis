@@ -1,0 +1,13 @@
+replace every dependency from gismlops to ntanalysis
+
+prepare_data.py - rework for command (add __main__ etc)
+commands - add command for data preparation
+pyproject.toml - add dependencies for prepare_data.py
+
+ntanalysis/data.py, ntanalysis/infer.py, ntanalysis/model.py, ntanalysis/train.py - completely new
+
+ntanalysis/conf/config.yaml - new specific config
+ntanalysis/tests/predict_test.py - rework tests to test different things, like prepare data etc
+
+# do i need to change ntanalysis/utils.py?
+# do we need dvc in commands?
