@@ -51,6 +51,7 @@ Useful conda commands:
 - to permanently remove auto-base env: conda config --set auto\_activate\_base false
 - to activate base env: conda activate
 - to deactivate base env: conda deactivate
+- to list all existing environments: conda env list
 
 Useful pre-commit commands:
 - to init pre-commit config in new repository: pre-commit install
