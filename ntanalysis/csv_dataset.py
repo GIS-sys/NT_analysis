@@ -16,6 +16,6 @@ class CsvDataset(torch.utils.data.Dataset):
 
     def __getitem__(self, index):
         sensors = self.df.iloc[index, 1:]
-        X = np.asarray(sensors[3:5], dtype=np.float32)
-        y = np.asarray(sensors[0:1], dtype=np.float32)
+        X = np.asarray(sensors[8:9], dtype=np.float32)
+        y = np.asarray(sensors[8:9], dtype=np.float32)
         return X, y

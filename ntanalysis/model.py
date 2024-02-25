@@ -14,7 +14,7 @@ class MyModel(pl.LightningModule):
         self.cfg = cfg
         # self.flatten = nn.Flatten()
         self.linear_relu_stack = nn.Sequential(
-            nn.Linear(2, 8),
+            nn.Linear(1, 8),
             nn.ReLU(),
             nn.Linear(8, 8),
             nn.ReLU(),
