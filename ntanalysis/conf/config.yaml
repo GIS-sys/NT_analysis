@@ -27,6 +27,7 @@ callbacks:
         lrs: 1e-3
 
 data:
+    raw_xlsx: "data/raw.xlsx"
     csv_path: "data/out.csv"
     batch_size: 256
     dataloader_num_wokers: 4

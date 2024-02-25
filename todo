@@ -1,5 +1,7 @@
 ntanalysis/model.py - completely new
+ntanalysis/data.py, ntanalysis/csv_dataset.py - probably need to dload dataset somehow else
 
 ntanalysis/tests/predict_test.py - rework tests to test different things, like prepare data etc
+ntanalysis/infer.py - return proper answers
 
 # do we need dvc in commands?
