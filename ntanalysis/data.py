@@ -8,6 +8,7 @@ from ntanalysis.csv_dataset import CsvDataset
 class MyDataModule(pl.LightningDataModule):
     def __init__(
         self,
+        halfinterval,
         csv_path,
         batch_size,
         dataloader_num_wokers,
@@ -16,6 +17,7 @@ class MyDataModule(pl.LightningDataModule):
         max_dataset_length,
     ):
         super().__init__()
+        self.halfinterval = halfinterval
         self.csv_path = csv_path
         self.batch_size = batch_size
         self.dataloader_num_wokers = dataloader_num_wokers
@@ -28,7 +30,9 @@ class MyDataModule(pl.LightningDataModule):
 
     def setup(self, stage: Optional[str] = None):
         self.full_dataset = CsvDataset(
-            csv_path=self.csv_path, max_length=self.max_dataset_length
+            halfinterval=self.halfinterval,
+            csv_path=self.csv_path,
+            max_length=self.max_dataset_length,
         )
         N = len(self.full_dataset)
         # TODO shuffle these indexes

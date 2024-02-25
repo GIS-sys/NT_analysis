@@ -29,19 +29,22 @@ callbacks:
 data:
     raw_xlsx: "data/raw.xlsx"
     csv_path: "data/out.csv"
-    batch_size: 256
+    batch_size: 64
     dataloader_num_wokers: 4
     val_size: 0.1
-    test_size: 0.2
-    max_dataset_length: 0.2
+    test_size: 0.1
+    max_dataset_length: 0.1
 
 general:
     seed: 42
 
+model:
+    halfinterval: 1
+
 train:
     learning_rate: 1e-2
-    num_warmup_steps: 200
-    num_training_steps: 1200
+    num_warmup_steps: 1200
+    num_training_steps: 18000
     grad_accum_steps: 4
     accelerator: auto
     #devices:
@@ -54,5 +57,5 @@ train:
     benchmark: false
     gradient_clip_val: 1.0
     profiler:
-    log_every_n_steps: 1024
+    log_every_n_steps: 256
     detect_anomaly: false

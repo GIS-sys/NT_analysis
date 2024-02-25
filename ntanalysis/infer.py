@@ -15,6 +15,7 @@ from omegaconf import DictConfig
 def infer(cfg: DictConfig):
     pl.seed_everything(cfg.general.seed)
     dm = MyDataModule(
+        halfinterval=cfg.model.halfinterval,
         csv_path=cfg.data.csv_path,
         batch_size=cfg.data.batch_size,
         dataloader_num_wokers=cfg.data.dataloader_num_wokers,
@@ -36,8 +37,9 @@ def infer(cfg: DictConfig):
     answers = np.concatenate(answers, axis=1)
 
     t = np.linspace(0, 1, answers.shape[1])
-    plt.plot(t, answers[0, :, 0], "r")
-    plt.plot(t, answers[1, :, 0], "g")
+    plt.plot(t, answers[0, :, cfg.halfinterval], "b")
+    plt.plot(t, answers[1, :, cfg.halfinterval], "g")
+    plt.plot(t, answers[2, :, cfg.halfinterval], "r")
     plt.show()
 
     return answers

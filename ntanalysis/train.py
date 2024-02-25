@@ -11,6 +11,7 @@ from omegaconf import DictConfig
 def train(cfg: DictConfig):
     pl.seed_everything(cfg.general.seed)
     dm = MyDataModule(
+        halfinterval=cfg.model.halfinterval,
         csv_path=cfg.data.csv_path,
         batch_size=cfg.data.batch_size,
         dataloader_num_wokers=cfg.data.dataloader_num_wokers,
