@@ -4,7 +4,7 @@ import torch
 
 
 class CsvDataset(torch.utils.data.Dataset):
-    def __init__(self, csv_path, max_length=0.1, transform=None):
+    def __init__(self, csv_path, max_length=None, transform=None):
         self.df = pd.read_csv(csv_path)
         self.transform = transform
         self.max_length = max_length
@@ -16,4 +16,6 @@ class CsvDataset(torch.utils.data.Dataset):
 
     def __getitem__(self, index):
         sensors = self.df.iloc[index, 1:]
-        return np.asarray(sensors, dtype=np.float32)
+        X = np.asarray(sensors[3:5], dtype=np.float32)
+        y = np.asarray(sensors[0:1], dtype=np.float32)
+        return X, y

@@ -16,6 +16,7 @@ def train(cfg: DictConfig):
         dataloader_num_wokers=cfg.data.dataloader_num_wokers,
         val_size=cfg.data.val_size,
         test_size=cfg.data.test_size,
+        max_dataset_length=cfg.data.max_dataset_length,
     )
     model = MyModel(cfg)
 

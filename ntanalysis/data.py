@@ -6,19 +6,30 @@ from ntanalysis.csv_dataset import CsvDataset
 
 
 class MyDataModule(pl.LightningDataModule):
-    def __init__(self, csv_path, batch_size, dataloader_num_wokers, val_size, test_size):
+    def __init__(
+        self,
+        csv_path,
+        batch_size,
+        dataloader_num_wokers,
+        val_size,
+        test_size,
+        max_dataset_length,
+    ):
         super().__init__()
         self.csv_path = csv_path
         self.batch_size = batch_size
         self.dataloader_num_wokers = dataloader_num_wokers
         self.val_size = val_size
         self.test_size = test_size
+        self.max_dataset_length = max_dataset_length
 
     def prepare_data(self):
         pass
 
     def setup(self, stage: Optional[str] = None):
-        self.full_dataset = CsvDataset(csv_path=self.csv_path)
+        self.full_dataset = CsvDataset(
+            csv_path=self.csv_path, max_length=self.max_dataset_length
+        )
         N = len(self.full_dataset)
         # TODO shuffle these indexes
         val_indexes = list(range(0, int(N * self.val_size)))

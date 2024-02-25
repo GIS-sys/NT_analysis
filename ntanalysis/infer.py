@@ -1,5 +1,6 @@
 import hydra
 import lightning.pytorch as pl
+import matplotlib.pyplot as plt
 import numpy as np
 
 # import pandas as pd
@@ -19,6 +20,7 @@ def infer(cfg: DictConfig):
         dataloader_num_wokers=cfg.data.dataloader_num_wokers,
         val_size=cfg.data.val_size,
         test_size=cfg.data.test_size,
+        max_dataset_length=cfg.data.max_dataset_length,
     )
     model = MyModel(cfg)
     model.load_state_dict(
@@ -30,32 +32,15 @@ def infer(cfg: DictConfig):
     trainer = get_default_trainer(cfg)
 
     trainer.test(model, datamodule=dm)
-    answers = np.concatenate(trainer.predict(model, datamodule=dm), axis=1).T
+    answers = trainer.predict(model, datamodule=dm)
+    answers = np.concatenate(answers, axis=1)
+
+    t = np.linspace(0, 1, answers.shape[1])
+    plt.plot(t, answers[0, :, 0], "r")
+    plt.plot(t, answers[1, :, 0], "g")
+    plt.show()
+
     return answers
-
-    # TODO return proper answers
-    # classes = [
-    #     "T-shirt/top",
-    #     "Trouser",
-    #     "Pullover",
-    #     "Dress",
-    #     "Coat",
-    #     "Sandal",
-    #     "Shirt",
-    #     "Sneaker",
-    #     "Bag",
-    #     "Ankle boot",
-    # ]
-
-    # answersDataFrame = pd.DataFrame(answers, columns=["target_index", "predicted_index"])
-    # answersDataFrame["target_label"] = answersDataFrame["target_index"].map(
-    #     lambda x: classes[x]
-    # )
-    # answersDataFrame["predicted_label"] = answersDataFrame["predicted_index"].map(
-    #     lambda x: classes[x]
-    # )
-    # answersDataFrame.to_csv("data/test.csv", index=False)
-    # return answersDataFrame
 
 
 if __name__ == "__main__":

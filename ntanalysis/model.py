@@ -27,33 +27,30 @@ class MyModel(pl.LightningModule):
         pred = self.linear_relu_stack(x)
         return pred
 
-    def training_step(self, batch: Any, batch_idx: int, dataloader_idx=0):
-        X, y = batch[:, 3:5], batch[:, 0:1]
+    def _base_step(self, batch):
+        X, y = batch
         pred = self(X)
         loss = self.loss_fn(pred, y)
+        return X, y, pred, loss
+
+    def training_step(self, batch: Any, batch_idx: int, dataloader_idx=0):
+        X, y, pred, loss = self._base_step(batch)
         self.log("train_loss", loss, on_step=True, on_epoch=False, prog_bar=True)
         return {"loss": loss}
 
     def validation_step(self, batch: Any, batch_idx: int, dataloader_idx: int = 0):
-        X, y = batch[:, 3:5], batch[:, 0:1]
-        pred = self(X)
-        loss = self.loss_fn(pred, y)
+        X, y, pred, loss = self._base_step(batch)
         self.log("val_loss", loss, on_step=True, on_epoch=True, prog_bar=True)
         return {"val_loss": loss}
 
     def test_step(self, batch: Any, batch_idx: int, dataloader_idx: int = 0):
-        X, y = batch
-        pred = self(X)
-        loss = self.loss_fn(pred, y)
-        correct = (pred.argmax(1) == y).type(torch.float).sum().item() / y.shape[0]
+        X, y, pred, loss = self._base_step(batch)
         self.log("test_loss", loss, on_step=True, on_epoch=True, prog_bar=True)
-        self.log("test_correct", correct, on_step=True, on_epoch=True, prog_bar=True)
-        return {"test_loss": loss, "test_correct": correct, "a": pred}
+        return {"test_loss": loss, "a": pred}
 
     def predict_step(self, batch: Any, batch_idx: int, dataloader_idx: int = 0) -> Any:
-        X, y = batch
-        pred = self(X)
-        return np.stack((y, pred.argmax(1)))
+        _, y, pred, _ = self._base_step(batch)
+        return np.stack((y, pred))
 
     @staticmethod
     def lr_warmup_wrapper(warmup_steps: int, training_steps: int):
