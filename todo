@@ -1,5 +1,3 @@
-replace every dependency from gismlops to ntanalysis
-
 prepare_data.py - rework for command (add __main__ etc)
 commands - add command for data preparation
 pyproject.toml - add dependencies for prepare_data.py

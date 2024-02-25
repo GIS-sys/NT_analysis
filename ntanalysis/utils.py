@@ -1,7 +1,7 @@
 import os
 
 import lightning.pytorch as pl
-from gismlops.git_manager import git_version
+from ntanalysis.git_manager import git_version
 
 
 def configure_loggers_and_callbacks(cfg):

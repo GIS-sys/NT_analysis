@@ -1,8 +1,8 @@
 import unittest
 
 import numpy as np
-from gismlops.dvc_manager import dvc_load
-from gismlops.infer import infer
+from ntanalysis.dvc_manager import dvc_load
+from ntanalysis.infer import infer
 from hydra import compose, initialize
 
 

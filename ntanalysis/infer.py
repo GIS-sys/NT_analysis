@@ -3,9 +3,9 @@ import lightning.pytorch as pl
 import numpy as np
 import pandas as pd
 import torch
-from gismlops.data import MyDataModule
-from gismlops.model import MyModel
-from gismlops.utils import get_default_trainer
+from ntanalysis.data import MyDataModule
+from ntanalysis.model import MyModel
+from ntanalysis.utils import get_default_trainer
 from omegaconf import DictConfig
 
 
