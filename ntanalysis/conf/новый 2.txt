@@ -44,8 +44,8 @@ model:
 
 train:
     learning_rate: 1e-2
-    num_warmup_steps: 24000
-    num_training_steps: 360000
+    num_warmup_steps: 12000
+    num_training_steps: 180000
     grad_accum_steps: 4
     accelerator: auto
     #devices:

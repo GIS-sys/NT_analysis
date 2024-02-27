@@ -20,6 +20,7 @@ class CsvDataset(torch.utils.data.Dataset):
         sensors = self.df.iloc[
             index - self.halfinterval : index + self.halfinterval + 1, :
         ]
-        X = np.asarray(sensors.iloc[:, 6], dtype=np.float32)
-        y = np.asarray(sensors.iloc[self.halfinterval, 8:9], dtype=np.float32)
+        X = np.asarray(sensors.iloc[:, 7], dtype=np.float32)
+        y = np.asarray(sensors.iloc[self.halfinterval, 1:2], dtype=np.float32)
+        # print (X,y)
         return X, y

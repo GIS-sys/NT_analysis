@@ -25,22 +25,19 @@ class MyModel(pl.LightningModule):
         #    nn.Linear(16, cfg.model.halfinterval * 2 + 1),
         # )
         self.linear_relu_stack = nn.Sequential(            
-            nn.Linear(cfg.model.halfinterval * 2 + 1, 32),  # Увеличение количества нейронов
+            nn.Linear(cfg.model.halfinterval * 2 + 1, 64),  # Увеличение количества нейронов
             nn.LeakyReLU(negative_slope=0.01),  # Используем LeakyReLU вместо ReLU
-            #nn.ReLU(),
-            #nn.BatchNorm1d(32), # Добавление пакетной нормализации
-            #nn.Dropout(p=0.2),  # добавляем Dropout с вероятностью "выключения" нейрона
-            nn.Linear(32, 32),
+            nn.BatchNorm1d(64), # Добавление пакетной нормализации
+            nn.Dropout(p=0.2),  # добавляем Dropout с вероятностью "выключения" нейрона
+            nn.Linear(64, 32),
             nn.LeakyReLU(negative_slope=0.01),  # Используем LeakyReLU вместо ReLU
-            #nn.ReLU(),
-            #nn.BatchNorm1d(32), # Добавление пакетной нормализации
-            #nn.Dropout(p=0.2),  # добавляем Dropout с вероятностью "выключения" нейрона
-            nn.Linear(32, 32),
+            nn.BatchNorm1d(32), # Добавление пакетной нормализации
+            nn.Dropout(p=0.2),  # добавляем Dropout с вероятностью "выключения" нейрона
+            nn.Linear(32, 16),
             nn.LeakyReLU(negative_slope=0.01),  # Используем LeakyReLU вместо ReLU
-            #nn.ReLU(),
-            #nn.BatchNorm1d(32), # Добавление пакетной нормализации
-            #nn.Dropout(p=0.2),  # добавляем Dropout с вероятностью "выключения" нейрона
-            nn.Linear(32, 1),
+            nn.BatchNorm1d(16), # Добавление пакетной нормализации
+            nn.Dropout(p=0.2),  # добавляем Dropout с вероятностью "выключения" нейрона
+            nn.Linear(16, 1),
         )
         # self.loss_fn = nn.MSELoss()
         self.loss_fn = nn.HuberLoss()
@@ -91,8 +88,8 @@ class MyModel(pl.LightningModule):
         return lr_warmup
 
     def configure_optimizers(self) -> Any:
-        # optimizer = torch.optim.Adam(self.parameters(), lr=self.cfg.train.learning_rate, weight_decay=1e-5)
-        optimizer = torch.optim.Adam(self.parameters(), lr=self.cfg.train.learning_rate)
+        optimizer = torch.optim.Adam(self.parameters(), lr=self.cfg.train.learning_rate, weight_decay=1e-5)
+        # optimizer = torch.optim.Adam(self.parameters(), lr=self.cfg.train.learning_rate)
         lr_scheduler = torch.optim.lr_scheduler.LambdaLR(
             optimizer,
             lr_lambda=type(self).lr_warmup_wrapper(
