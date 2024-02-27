@@ -79,7 +79,7 @@ class MyModel(pl.LightningModule):
         return lr_warmup
 
     def configure_optimizers(self) -> Any:
-        optimizer = torch.optim.SGD(self.parameters(), lr=self.cfg.train.learning_rate)
+        optimizer = torch.optim.Adam(self.parameters(), lr=self.cfg.train.learning_rate)
         lr_scheduler = torch.optim.lr_scheduler.LambdaLR(
             optimizer,
             lr_lambda=type(self).lr_warmup_wrapper(
