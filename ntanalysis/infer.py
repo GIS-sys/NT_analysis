@@ -14,6 +14,7 @@ from omegaconf import DictConfig
 @hydra.main(config_path="conf", config_name="config", version_base="1.3")
 def infer(cfg: DictConfig):
     pl.seed_everything(cfg.general.seed)
+    cfg.artifacts.enable_logger = False
     dm = MyDataModule(
         halfinterval=cfg.model.halfinterval,
         csv_path=cfg.data.csv_path,
