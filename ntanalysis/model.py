@@ -12,18 +12,6 @@ class MyModel(pl.LightningModule):
         super().__init__()
         self.save_hyperparameters()
         self.cfg = cfg
-        # self.flatten = nn.Flatten()
-        # self.linear_relu_stack = nn.Sequential(
-        #    nn.Linear(cfg.model.halfinterval * 2 + 1, 16),
-        #    nn.Sigmoid(),
-        #    nn.Linear(16, 16),
-        #    nn.Sigmoid(),
-        #    nn.Linear(16, 16),
-        #    nn.Sigmoid(),
-        #    nn.Linear(16, 16),
-        #    nn.Sigmoid(),
-        #    nn.Linear(16, cfg.model.halfinterval * 2 + 1),
-        # )
         self.linear_relu_stack = nn.Sequential(
             nn.Linear(cfg.model.halfinterval * 2 + 1, 11),
             nn.ReLU(),
@@ -31,7 +19,7 @@ class MyModel(pl.LightningModule):
             nn.ReLU(),
             nn.Linear(11, 1),
         )
-        self.loss_fn = nn.MSELoss()
+        self.loss_fn = nn.HuberLoss()
 
     def forward(self, x):
         # x = self.flatten(x)
