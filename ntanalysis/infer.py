@@ -54,14 +54,12 @@ def infer(cfg: DictConfig):
     #            ),
     #        )
     #    )
-    input_end = cfg.model.input_size * (10 + 7)
-    output_end = input_end + cfg.model.prediction_size * 10
-    data_plot.append(("output", answers[:, input_end + 3]))
-    data_plot.append(("output1", answers[:, input_end + 4]))
+    input_end = cfg.model.input_size * 10
+    output_end = input_end + cfg.model.prediction_size * 1
+    data_plot.append(("output", answers[:, input_end]))
+    data_plot.append(("prediction", answers[:, output_end]))
     # data_plot.append((f"prediction 1", answers[:, output_end + K-2]))
     # data_plot.append((f"prediction 2", answers[:, output_end + K-1]))
-    data_plot.append(("prediction", answers[:, output_end + 3]))
-    data_plot.append(("prediction1", answers[:, output_end + 4]))
     for label, datum in data_plot:
         plt.plot(t, datum, label=label)
     plt.legend()

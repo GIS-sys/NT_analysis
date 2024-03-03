@@ -21,21 +21,32 @@ class CsvDataset(torch.utils.data.Dataset):
         raw_df = raw_df.iloc[:N, :]
         # convert day of weeks to one-hot
         one_hot = pd.get_dummies(raw_df["TIME_dow"])
-        raw_df = raw_df.iloc[:, 1:11].join(one_hot)
+        raw_df = raw_df.iloc[:, 1:12].join(one_hot)
         raw_np = raw_df.to_numpy().astype(np.float32)
         # stack inputs
         inputs = []
         for i in range(input_size):
             start = i * input_gap
             rest = (input_size - 1) * input_gap - start + 1
-            inputs.append(raw_np[start:-rest, :])
+            inputs.append(raw_np[start:-rest, 0:10])
         self.data_in = np.concatenate(inputs, axis=1)
         # stack outputs
         outputs = []
         for i in range(prediction_size):
             start = i
             rest = prediction_size - start
-            outputs.append(raw_np[prediction_distance + start : -rest, 0:10])
+            outputs.append(
+                np.exp(
+                    -0.000136836
+                    * np.abs(
+                        (
+                            raw_np[prediction_distance + start : -rest, 10:11]
+                            - raw_np[raw_np.shape[0] // 2][10]
+                        )
+                        / 60
+                    )
+                )
+            )
         self.data_out = np.concatenate(outputs, axis=1)
         # trim to match sizes
         length = min(self.data_out.shape[0], self.data_in.shape[0])
