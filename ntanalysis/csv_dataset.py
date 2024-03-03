@@ -4,6 +4,30 @@ import torch
 
 
 class CsvDataset(torch.utils.data.Dataset):
+    BAD_POINTS = [
+        1643359260,
+        1650396180,
+        1652526540,
+        1656152220,
+        1662825660,
+        1663951860,
+        1664093760,
+        1666003140,
+        1679421000,
+        1689845700,
+        1665014400,
+        1665705600,
+    ]
+
+    @staticmethod
+    def target_function(times):
+        result = np.zeros(shape=times.shape)
+        for point in CsvDataset.BAD_POINTS:
+            attempt = np.exp(-0.00014 * (point - times) / 60)
+            attempt[attempt > 1] = 0
+            result += attempt
+        return result.astype(np.float32)
+
     def __init__(
         self,
         csv_path,
@@ -36,15 +60,8 @@ class CsvDataset(torch.utils.data.Dataset):
             start = i
             rest = prediction_size - start
             outputs.append(
-                np.exp(
-                    -0.000136836
-                    * np.abs(
-                        (
-                            raw_np[prediction_distance + start : -rest, 10:11]
-                            - raw_np[raw_np.shape[0] // 2][10]
-                        )
-                        / 60
-                    )
+                CsvDataset.target_function(
+                    raw_np[prediction_distance + start : -rest, 10:11]
                 )
             )
         self.data_out = np.concatenate(outputs, axis=1)
@@ -52,6 +69,7 @@ class CsvDataset(torch.utils.data.Dataset):
         length = min(self.data_out.shape[0], self.data_in.shape[0])
         self.data_in = self.data_in[:length, :]
         self.data_out = self.data_out[:length, :]
+        print("min and max times in dataset:", raw_np[0, 10], raw_np[-1, 10])
 
     def __len__(self):
         return self.data_in.shape[0]

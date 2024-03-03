@@ -14,6 +14,10 @@ from omegaconf import DictConfig
 @hydra.main(config_path="conf", config_name="config", version_base="1.3")
 def infer(cfg: DictConfig):
     pl.seed_everything(cfg.general.seed)
+    cfg.data.val_size = 0.01
+    cfg.data.test_size = 0.98
+    cfg.data.max_dataset_length = 0.73
+    cfg.data.batch_size = 4096
     cfg.artifacts.enable_logger = False
     dm = MyDataModule(cfg)
     model = MyModel(cfg)
@@ -58,8 +62,6 @@ def infer(cfg: DictConfig):
     output_end = input_end + cfg.model.prediction_size * 1
     data_plot.append(("output", answers[:, input_end]))
     data_plot.append(("prediction", answers[:, output_end]))
-    # data_plot.append((f"prediction 1", answers[:, output_end + K-2]))
-    # data_plot.append((f"prediction 2", answers[:, output_end + K-1]))
     for label, datum in data_plot:
         plt.plot(t, datum, label=label)
     plt.legend()

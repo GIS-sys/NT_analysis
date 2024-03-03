@@ -31,8 +31,8 @@ data:
     csv_path: "data/out.csv"
     batch_size: 64
     dataloader_num_wokers: 4
-    val_size: 0.01
-    test_size: 0.99
+    val_size: 0.1
+    test_size: 0.1
     max_dataset_length: 0.1
     input_gap: 2000
     prediction_distance: 7000

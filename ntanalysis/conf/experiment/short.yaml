@@ -2,12 +2,11 @@
 
 artifacts:
     enable_logger: false
-    experiment_name: predict_nt_small
+    experiment_name: predict_nt_short
 
 data:
-    max_dataset_length: 0.01
+    max_dataset_length: 0.05
 
 train:
     num_warmup_steps: 120
     num_training_steps: 1800
-    log_every_n_steps: 64

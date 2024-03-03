@@ -5,7 +5,8 @@ artifacts:
     experiment_name: predict_nt_long
 
 data:
-    max_dataset_length: 0.4
+    batch_size: 256
+    max_dataset_length: 0.73
 
 train:
     num_warmup_steps: 4800
