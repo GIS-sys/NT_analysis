@@ -9,3 +9,7 @@ __pycache__/
 # Program results
 /data
 /.logs
+
+# Vim
+*.swo
+*.swp
