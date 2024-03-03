@@ -28,19 +28,35 @@ def infer(cfg: DictConfig):
     # trainer.test(model, datamodule=dm)
     answers = trainer.predict(model, datamodule=dm)
     answers = np.concatenate(answers)
+    print(answers)
 
     t = np.linspace(0, 1, answers.shape[0])
-    print(answers)
-    x = np.argmax(answers[:, 10 : 10 + 7], axis=1)
+    data_plot = []
+    for i in range(cfg.model.input_size):
+        data_plot.append(
+            (f"input {i}", np.argmax(answers[:, 17 * i + 10 : 17 * i + 10 + 7], axis=1))
+        )
     input_end = cfg.model.input_size * (10 + 7)
-    y = np.argmax(answers[:, input_end : input_end + 7], axis=1)
-    pred = np.argmax(answers[:, input_end + 7 :], axis=1)
-    print(x)
-    print(y)
-    print(pred)
-    plt.plot(t, x, color="blue")
-    plt.plot(t, y, color="green")
-    plt.plot(t, pred, color="red")
+    for i in range(cfg.model.prediction_size):
+        data_plot.append(
+            (
+                f"output {i}",
+                np.argmax(answers[:, input_end + 7 * i : input_end + 7 * i + 7], axis=1),
+            )
+        )
+    output_end = input_end + cfg.model.prediction_size * 7
+    for i in range(cfg.model.prediction_size):
+        data_plot.append(
+            (
+                f"prediction {i}",
+                np.argmax(
+                    answers[:, output_end + 7 * i : output_end + 7 * i + 7], axis=1
+                ),
+            )
+        )
+    for label, datum in data_plot:
+        plt.plot(t, datum, label=label)
+    plt.legend()
     plt.show()
 
     return answers
