@@ -34,7 +34,7 @@ class MyModel(pl.LightningModule):
 
     def training_step(self, batch: Any, batch_idx: int, dataloader_idx=0):
         X, y, pred, loss = self._base_step(batch)
-        self.log("train_loss", loss, on_step=True, on_epoch=False, prog_bar=True)
+        self.log("train_loss", loss, on_step=True, on_epoch=True, prog_bar=True)
         return {"loss": loss}
 
     def validation_step(self, batch: Any, batch_idx: int, dataloader_idx: int = 0):
@@ -44,7 +44,7 @@ class MyModel(pl.LightningModule):
 
     def test_step(self, batch: Any, batch_idx: int, dataloader_idx: int = 0):
         X, y, pred, loss = self._base_step(batch)
-        self.log("test_loss", loss, on_step=True, on_epoch=True, prog_bar=True)
+        self.log("test_loss", loss, on_step=False, on_epoch=True, prog_bar=True)
         return {"test_loss": loss, "a": pred}
 
     def predict_step(self, batch: Any, batch_idx: int, dataloader_idx: int = 0) -> Any:
