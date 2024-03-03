@@ -10,15 +10,7 @@ from omegaconf import DictConfig
 @hydra.main(config_path="conf", config_name="config", version_base="1.3")
 def train(cfg: DictConfig):
     pl.seed_everything(cfg.general.seed)
-    dm = MyDataModule(
-        halfinterval=cfg.model.halfinterval,
-        csv_path=cfg.data.csv_path,
-        batch_size=cfg.data.batch_size,
-        dataloader_num_wokers=cfg.data.dataloader_num_wokers,
-        val_size=cfg.data.val_size,
-        test_size=cfg.data.test_size,
-        max_dataset_length=cfg.data.max_dataset_length,
-    )
+    dm = MyDataModule(cfg)
     model = MyModel(cfg)
 
     trainer = get_default_trainer(cfg)

@@ -15,15 +15,7 @@ from omegaconf import DictConfig
 def infer(cfg: DictConfig):
     pl.seed_everything(cfg.general.seed)
     cfg.artifacts.enable_logger = False
-    dm = MyDataModule(
-        halfinterval=cfg.model.halfinterval,
-        csv_path=cfg.data.csv_path,
-        batch_size=cfg.data.batch_size,
-        dataloader_num_wokers=cfg.data.dataloader_num_wokers,
-        val_size=cfg.data.val_size,
-        test_size=cfg.data.test_size,
-        max_dataset_length=cfg.data.max_dataset_length,
-    )
+    dm = MyDataModule(cfg)
     model = MyModel(cfg)
     model.load_state_dict(
         torch.load(cfg.artifacts.model.path + cfg.artifacts.model.name + ".pth")
@@ -33,14 +25,21 @@ def infer(cfg: DictConfig):
     cfg.artifacts.checkpoint.use = False
     trainer = get_default_trainer(cfg)
 
-    trainer.test(model, datamodule=dm)
+    # trainer.test(model, datamodule=dm)
     answers = trainer.predict(model, datamodule=dm)
     answers = np.concatenate(answers)
 
     t = np.linspace(0, 1, answers.shape[0])
-    plt.plot(t, answers[:, cfg.model.halfinterval], color="blue")
-    plt.plot(t, answers[:, -2], color="green")
-    plt.plot(t, answers[:, -1], color="red")
+    print(answers)
+    x = np.argmax(answers[:, 10 : 10 + 7], axis=1)
+    y = np.argmax(answers[:, 10 + 7 : 10 + 14], axis=1)
+    pred = np.argmax(answers[:, 10 + 14 :], axis=1)
+    print(x)
+    print(y)
+    print(pred)
+    plt.plot(t, x, color="blue")
+    plt.plot(t, y, color="green")
+    plt.plot(t, pred, color="red")
     plt.show()
 
     return answers

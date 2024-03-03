@@ -7,33 +7,25 @@ from ntanalysis.csv_dataset import CsvDataset
 
 
 class MyDataModule(pl.LightningDataModule):
-    def __init__(
-        self,
-        halfinterval,
-        csv_path,
-        batch_size,
-        dataloader_num_wokers,
-        val_size,
-        test_size,
-        max_dataset_length,
-    ):
+    def __init__(self, cfg):
         super().__init__()
-        self.halfinterval = halfinterval
-        self.csv_path = csv_path
-        self.batch_size = batch_size
-        self.dataloader_num_wokers = dataloader_num_wokers
-        self.val_size = val_size
-        self.test_size = test_size
-        self.max_dataset_length = max_dataset_length
+        self.cfg = cfg
+        self.batch_size = cfg.data.batch_size
+        self.dataloader_num_wokers = cfg.data.dataloader_num_wokers
+        self.val_size = cfg.data.val_size
+        self.test_size = cfg.data.test_size
 
     def prepare_data(self):
         pass
 
     def setup(self, stage: Optional[str] = None):
         self.full_dataset = CsvDataset(
-            halfinterval=self.halfinterval,
-            csv_path=self.csv_path,
-            max_length=self.max_dataset_length,
+            input_size=self.cfg.model.input_size,
+            input_gap=self.cfg.data.input_gap,
+            prediction_distance=self.cfg.data.prediction_distance,
+            prediction_size=self.cfg.model.prediction_size,
+            csv_path=self.cfg.data.csv_path,
+            max_length=self.cfg.data.max_dataset_length,
         )
         N = len(self.full_dataset)
         # get shuffled indexes
