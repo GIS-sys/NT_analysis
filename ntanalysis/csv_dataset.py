@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import torch
+from tqdm import tqdm
 
 
 class CsvDataset(torch.utils.data.Dataset):
@@ -26,7 +27,8 @@ class CsvDataset(torch.utils.data.Dataset):
         )
         self.data_in = np.zeros(shape=(length, dim_in), dtype=np.float32)
         self.data_out = np.zeros(shape=(length, dim_out), dtype=np.float32)
-        for x in range(length):
+        print("Loading dataset...")
+        for x in tqdm(range(length)):
             for i in range(input_size):
                 row_source = x + i * input_gap
                 y_bias = (10 + 7) * i
@@ -44,4 +46,9 @@ class CsvDataset(torch.utils.data.Dataset):
     def __getitem__(self, index):
         X = self.data_in[index, :]
         y = self.data_out[index, :]
+        return X, y
+
+    def __getitems__(self, ids):
+        X = self.data_in[ids, :]
+        y = self.data_out[ids, :]
         return X, y

@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Tuple
 
 import lightning.pytorch as pl
 import numpy as np
@@ -48,6 +48,21 @@ class MyDataModule(pl.LightningDataModule):
     def predict_dataloader(self) -> torch.utils.data.DataLoader:
         return self.test_dataloader()
 
+    @staticmethod
+    def collate_fn(batch) -> Tuple[torch.Tensor, torch.Tensor]:
+        if isinstance(batch, tuple):
+            # Tuple[Numpy, Numpy], (2, batch_size, features)
+            X, y = batch
+            X, y = torch.from_numpy(X), torch.from_numpy(y)
+            return X, y
+        elif isinstance(batch, list):
+            # List[Tuple[Numpy, Numpy]], (batch_size, 2, features)
+            X, y = zip(*batch, strict=True)
+            X, y = torch.from_numpy(np.stack(X)), torch.from_numpy(np.stack(y))
+            return X, y
+        else:
+            raise Exception("Unexpected type inn collate_fn")
+
     def test_dataloader(self) -> torch.utils.data.DataLoader:
         return torch.utils.data.DataLoader(
             self.test_dataset,
@@ -55,6 +70,7 @@ class MyDataModule(pl.LightningDataModule):
             shuffle=False,
             num_workers=self.dataloader_num_wokers,
             persistent_workers=True,
+            collate_fn=MyDataModule.collate_fn,
         )
 
     def train_dataloader(self) -> torch.utils.data.DataLoader:
@@ -64,6 +80,7 @@ class MyDataModule(pl.LightningDataModule):
             shuffle=True,
             num_workers=self.dataloader_num_wokers,
             persistent_workers=True,
+            collate_fn=MyDataModule.collate_fn,
         )
 
     def val_dataloader(self) -> torch.utils.data.DataLoader:
@@ -73,4 +90,5 @@ class MyDataModule(pl.LightningDataModule):
             shuffle=False,
             num_workers=self.dataloader_num_wokers,
             persistent_workers=True,
+            collate_fn=MyDataModule.collate_fn,
         )
