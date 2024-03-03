@@ -32,28 +32,36 @@ def infer(cfg: DictConfig):
 
     t = np.linspace(0, 1, answers.shape[0])
     data_plot = []
-    for i in range(cfg.model.input_size):
-        data_plot.append(
-            (f"input {i}", np.argmax(answers[:, 17 * i + 10 : 17 * i + 10 + 7], axis=1))
-        )
+    # for i in range(cfg.model.input_size):
+    #    data_plot.append(
+    #        (f"input {i}", np.argmax(answers[:, 17 * i + 10 : 17 * i + 10 + 7], axis=1))
+    #    )
+    # input_end = cfg.model.input_size * (10 + 7)
+    # for i in range(cfg.model.prediction_size):
+    #    data_plot.append(
+    #        (
+    #            f"output {i}",
+    #            np.argmax(answers[:, input_end + 10 * i : input_end + 10 * i + 7], axis=1),
+    #        )
+    #    )
+    # output_end = input_end + cfg.model.prediction_size * 7
+    # for i in range(cfg.model.prediction_size):
+    #    data_plot.append(
+    #        (
+    #            f"prediction {i}",
+    #            np.argmax(
+    #                answers[:, output_end + 7 * i : output_end + 7 * i + 7], axis=1
+    #            ),
+    #        )
+    #    )
     input_end = cfg.model.input_size * (10 + 7)
-    for i in range(cfg.model.prediction_size):
-        data_plot.append(
-            (
-                f"output {i}",
-                np.argmax(answers[:, input_end + 7 * i : input_end + 7 * i + 7], axis=1),
-            )
-        )
-    output_end = input_end + cfg.model.prediction_size * 7
-    for i in range(cfg.model.prediction_size):
-        data_plot.append(
-            (
-                f"prediction {i}",
-                np.argmax(
-                    answers[:, output_end + 7 * i : output_end + 7 * i + 7], axis=1
-                ),
-            )
-        )
+    output_end = input_end + cfg.model.prediction_size * 10
+    data_plot.append(("output", answers[:, input_end + 3]))
+    data_plot.append(("output1", answers[:, input_end + 4]))
+    # data_plot.append((f"prediction 1", answers[:, output_end + K-2]))
+    # data_plot.append((f"prediction 2", answers[:, output_end + K-1]))
+    data_plot.append(("prediction", answers[:, output_end + 3]))
+    data_plot.append(("prediction1", answers[:, output_end + 4]))
     for label, datum in data_plot:
         plt.plot(t, datum, label=label)
     plt.legend()

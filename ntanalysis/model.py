@@ -19,7 +19,7 @@ class MyModel(pl.LightningModule):
             nn.LeakyReLU(),
             nn.Linear(2 * cfg.model.layer_scale, cfg.model.layer_scale),
             nn.LeakyReLU(),
-            nn.Linear(cfg.model.layer_scale, cfg.model.prediction_size * 7),
+            nn.Linear(cfg.model.layer_scale, cfg.model.prediction_size * 10),
         )
         self.loss_fn = nn.HuberLoss()
 

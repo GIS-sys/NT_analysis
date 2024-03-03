@@ -16,7 +16,7 @@ class CsvDataset(torch.utils.data.Dataset):
     ):
         print("Reading dataset from csv...")
         raw_df = pd.read_csv(csv_path)
-        # main variables TODO delete some
+        # main variables
         N = int(len(raw_df) * max_length)
         raw_df = raw_df.iloc[:N, :]
         # convert day of weeks to one-hot
@@ -35,7 +35,7 @@ class CsvDataset(torch.utils.data.Dataset):
         for i in range(prediction_size):
             start = i
             rest = prediction_size - start
-            outputs.append(raw_np[prediction_distance + start : -rest, -7:])
+            outputs.append(raw_np[prediction_distance + start : -rest, 0:10])
         self.data_out = np.concatenate(outputs, axis=1)
         # trim to match sizes
         length = min(self.data_out.shape[0], self.data_in.shape[0])
