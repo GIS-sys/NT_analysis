@@ -62,6 +62,7 @@ def infer(cfg: DictConfig):
     output_end = input_end + cfg.model.prediction_size * 1
     data_plot.append(("output", answers[:, input_end]))
     data_plot.append(("prediction", answers[:, output_end]))
+    # data_plot.append(("input_1", answers[:, 0]))
     for label, datum in data_plot:
         plt.plot(t, datum, label=label)
     plt.legend()
