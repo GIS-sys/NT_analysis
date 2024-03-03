@@ -23,7 +23,7 @@ class CsvDataset(torch.utils.data.Dataset):
     def target_function(times):
         result = np.zeros(shape=times.shape)
         for point in CsvDataset.BAD_POINTS:
-            attempt = np.exp(-0.00014 * (point - times) / 60)
+            attempt = np.exp(-0.00004 * (point - times) / 60)
             attempt[attempt > 1] = 0
             result += attempt
         return result.astype(np.float32)

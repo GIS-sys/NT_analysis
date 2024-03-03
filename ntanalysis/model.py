@@ -21,7 +21,7 @@ class MyModel(pl.LightningModule):
             nn.LeakyReLU(),
             nn.Linear(cfg.model.layer_scale, cfg.model.prediction_size),
         )
-        self.loss_fn = nn.HuberLoss()
+        self.loss_fn = nn.MSELoss(reduction="mean")
 
     def forward(self, x):
         # x = self.flatten(x)

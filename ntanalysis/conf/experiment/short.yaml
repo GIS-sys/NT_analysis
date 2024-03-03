@@ -8,5 +8,5 @@ data:
     max_dataset_length: 0.05
 
 train:
-    num_warmup_steps: 120
-    num_training_steps: 1800
+    num_warmup_steps: 500
+    num_training_steps: 5000
