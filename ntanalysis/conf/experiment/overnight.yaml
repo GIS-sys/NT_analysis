@@ -1,0 +1,14 @@
+# @package _global_
+
+artifacts:
+    enable_logger: true
+    experiment_name: predict_nt_overnight
+
+data:
+    batch_size: 512
+    max_dataset_length: 0.73
+
+train:
+    num_warmup_steps: 4800
+    num_training_steps: 180000
+    log_every_n_steps: 512
