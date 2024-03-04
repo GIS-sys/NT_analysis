@@ -19,6 +19,7 @@ TOTAL_FRAMES = 720
 FPS = 24
 TRAILING_PLOT = 0.1
 TRAILING_CUMMEAN = 200
+PREDICTION_ALARM_THRESHOLD = 0.5
 
 
 def animate_plot(t, data_plot):
@@ -105,6 +106,8 @@ def showcase(cfg: DictConfig):
         (answers[:TRAILING_CUMMEAN, output_end], pred_cummean_trailing)
     )
     data_plot.append(("prediction", pred_plot))
+    pred_alarm = (pred_plot > PREDICTION_ALARM_THRESHOLD).astype(int)
+    data_plot.append(("prediction", pred_alarm))
     animate_plot(t, data_plot)
 
 
