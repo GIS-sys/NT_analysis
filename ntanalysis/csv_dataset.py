@@ -53,22 +53,22 @@ class CsvDataset(torch.utils.data.Dataset):
             start = i * input_gap
             rest = (input_size - 1) * input_gap - start + 1
             inputs.append(raw_np[start:-rest, 0:10])
-        self.data_in = np.concatenate(inputs, axis=1)
         # stack outputs
         outputs = []
         for i in range(prediction_size):
             start = i
             rest = prediction_size - start
             outputs.append(
-                CsvDataset.target_function(
-                    raw_np[prediction_distance + start : -rest, 10:11]
-                )
+                CsvDataset.target_function(raw_np[prediction_distance:-rest, 10:11])
             )
-        self.data_out = np.concatenate(outputs, axis=1)
+        inputs = [raw_np[prediction_distance:-prediction_size, 10:11]] + inputs
         # trim to match sizes
-        length = min(self.data_out.shape[0], self.data_in.shape[0])
-        self.data_in = self.data_in[:length, :]
-        self.data_out = self.data_out[:length, :]
+        length = min(inputs[0].shape[0], outputs[0].shape[0])
+        inputs = [x[:length, :] for x in inputs]
+        outputs = [x[:length, :] for x in outputs]
+        # stack
+        self.data_in = np.concatenate(inputs, axis=1)
+        self.data_out = np.concatenate(outputs, axis=1)
         print("min and max times in dataset:", raw_np[0, 10], raw_np[-1, 10])
 
     def __len__(self):

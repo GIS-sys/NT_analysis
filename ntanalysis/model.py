@@ -30,7 +30,7 @@ class MyModel(pl.LightningModule):
 
     def _base_step(self, batch):
         X, y = batch
-        pred = self(X)
+        pred = self(X[:, 1:])
         loss = self.loss_fn(pred, y)
         return X, y, pred, loss
 
@@ -50,8 +50,8 @@ class MyModel(pl.LightningModule):
         return {"test_loss": loss, "a": pred}
 
     def predict_step(self, batch: Any, batch_idx: int, dataloader_idx: int = 0) -> Any:
-        x, y, pred, _ = self._base_step(batch)
-        return np.concatenate((x, y, pred), axis=1)
+        X, y, pred, _ = self._base_step(batch)
+        return np.concatenate((X, y, pred), axis=1)
 
     @staticmethod
     def lr_warmup_wrapper(warmup_steps: int, training_steps: int):

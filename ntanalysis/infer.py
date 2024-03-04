@@ -34,7 +34,8 @@ def infer(cfg: DictConfig):
     answers = np.concatenate(answers)
     print(answers)
 
-    t = np.linspace(0, 1, answers.shape[0])
+    t = answers[:, 0]
+    answers = answers[:, 1:]
     data_plot = []
     # for i in range(cfg.model.input_size):
     #    data_plot.append(

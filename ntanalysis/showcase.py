@@ -4,7 +4,6 @@ import hydra
 import lightning.pytorch as pl
 import matplotlib.pyplot as plt
 import numpy as np
-import pandas as pd
 import torch
 from matplotlib.animation import FuncAnimation
 from matplotlib.widgets import Slider
@@ -38,7 +37,7 @@ WIDTH_BAD_POINT = 10
 
 def animate_plot(t, pred_data, bad_points):
     # Main vars
-    SLIDER_LENGTH = t.shape[0]
+    SLIDER_LENGTH = len(t)
     # Calculate thresholds
     zigzag_index = 0
     arr = pred_data
@@ -133,11 +132,8 @@ def showcase(cfg: DictConfig):
 
     # TODO FIX TIME AXIS INTERVALS IF NEEDED
     # t = np.linspace(0, 1, answers.shape[0])
-    t = pd.date_range(
-        datetime.fromtimestamp(1633824000),
-        datetime.fromtimestamp(1664613100),
-        answers.shape[0],
-    )
+    t = [datetime.fromtimestamp(int(x)) for x in answers[:, 0]]
+    answers = answers[:, 1:]
     input_end = cfg.model.input_size * 10
     output_end = input_end + cfg.model.prediction_size * 1
     # data_plot.append(("output", answers[:, input_end]))
