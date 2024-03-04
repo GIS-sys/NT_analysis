@@ -12,8 +12,9 @@ from omegaconf import DictConfig
 
 
 def animate_plot(t, data_plot):
-    TOTAL_FRAMES = 24
+    TOTAL_FRAMES = 240
     FPS = 24
+    TRAILING = 0.1
     # Main vars
     SLIDER_LENGTH = t.shape[0]
     MAX_LIM = t[-1]
@@ -31,7 +32,8 @@ def animate_plot(t, data_plot):
     # Update function for the plot based on slider value
     def update(val):
         x_max = slider.val / SLIDER_LENGTH * MAX_LIM
-        ax.set_xlim(0, x_max)
+        x_min = max(0, x_max - MAX_LIM * TRAILING)
+        ax.set_xlim(x_min, x_max)
         fig.canvas.draw_idle()
 
     slider.on_changed(update)
@@ -81,7 +83,6 @@ def showcase(cfg: DictConfig):
     data_plot.append(("output", answers[:, input_end]))
     data_plot.append(("prediction", answers[:, output_end]))
     # TODO add bad points
-    # TODO show only some period, not infinity before
     # TODO plot mean
     animate_plot(t, data_plot)
 
