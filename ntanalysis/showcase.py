@@ -52,7 +52,6 @@ def animate_plot(t, pred_data, bad_points):
         arr = arr[pos:]
         zigzag_positions.append(zigzag_positions[-1] + pos)
         zigzag_index = (zigzag_index + 1) % len(ZIGZAG_THRESHOLDS)
-    print(zigzag_positions)
     # Create plot
     fig, ax = plt.subplots()
     plt.subplots_adjust(bottom=0.25)
@@ -69,14 +68,17 @@ def animate_plot(t, pred_data, bad_points):
             color=ZIGZAG_COLORS[zigzag_i],
             fontsize=FONT_SIZE,
         )
+        print(label + "\n" + t[pos].strftime("%Y/%m/%d, %H:%M:%S"))
     for x in np.where(bad_points > 0.5)[0]:
+        label = t[x].strftime("Запись в журнале\n%Y/%m/%d, %H:%M:%S")
         ax.annotate(
-            t[x].strftime("Запись в журнале\n%Y/%m/%d, %H:%M:%S"),
+            label,
             (t[x], pred_data[x]),
             arrowprops=ARROW_PROPS,
             color="black",
             fontsize=FONT_SIZE,
         )
+        print(label + "\n" + t[x].strftime("%Y/%m/%d, %H:%M:%S"))
     ax.set_xlim(t[0], t[1])
     ax.set_ylim(Y_AXIS)
     # Slider
