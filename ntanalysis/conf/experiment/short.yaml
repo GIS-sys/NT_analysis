@@ -9,4 +9,4 @@ data:
 
 train:
     num_warmup_steps: 500
-    num_training_steps: 5000
+    num_training_steps: 1000

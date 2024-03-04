@@ -10,5 +10,5 @@ data:
 
 train:
     num_warmup_steps: 4800
-    num_training_steps: 180000
+    num_training_steps: 60000
     log_every_n_steps: 512
