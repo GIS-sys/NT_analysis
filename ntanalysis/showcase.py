@@ -18,19 +18,39 @@ BAD_POINT_THRESHOLD = 0.9
 TOTAL_FRAMES = 720
 FPS = 24
 TRAILING_PLOT = 0.1
-TRAILING_CUMMEAN = 200
-PREDICTION_ALARM_THRESHOLD = 0.5
+TRAILING_CUMMEAN = 2000
+ZIGZAG_THRESHOLDS = [(1, 0.4), (1, 0.8), (-1, 0.2)]
+ARROW_PROPS = {"width": 1}
 
 
-def animate_plot(t, data_plot):
+def animate_plot(t, data_plot, zigzag_base_data):
     # Main vars
     SLIDER_LENGTH = t.shape[0]
+    # Calculate thresholds
+    zigzag_index = 0
+    arr = zigzag_base_data
+    zigzag_positions = [0]
+    while True:
+        sign, thresh = ZIGZAG_THRESHOLDS[zigzag_index]
+        found = np.where(arr * sign > thresh * sign)[0]
+        if found.size == 0:
+            break
+        pos = found[0]
+        arr = arr[pos:]
+        zigzag_positions.append(zigzag_positions[-1] + pos)
+        zigzag_index = (zigzag_index + 1) % len(ZIGZAG_THRESHOLDS)
+    print(zigzag_positions)
     # Create plot
     fig, ax = plt.subplots()
     plt.subplots_adjust(bottom=0.25)
     # Initial plot
     for label, datum in data_plot:
         ax.plot(t, datum, label=label)
+    for i, pos in enumerate(zigzag_positions):
+        condition = ZIGZAG_THRESHOLDS[i % len(ZIGZAG_THRESHOLDS)]
+        ax.annotate(
+            str(condition), (t[pos], zigzag_base_data[pos]), arrowprops=ARROW_PROPS
+        )
     ax.set_xlim(t[0], t[1])
     # Slider
     ax_slider = plt.axes([0.1, 0.1, 0.8, 0.05])
@@ -106,9 +126,7 @@ def showcase(cfg: DictConfig):
         (answers[:TRAILING_CUMMEAN, output_end], pred_cummean_trailing)
     )
     data_plot.append(("prediction", pred_plot))
-    pred_alarm = (pred_plot > PREDICTION_ALARM_THRESHOLD).astype(int)
-    data_plot.append(("prediction", pred_alarm))
-    animate_plot(t, data_plot)
+    animate_plot(t, data_plot, pred_plot)
 
 
 if __name__ == "__main__":
