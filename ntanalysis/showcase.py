@@ -14,7 +14,8 @@ from omegaconf import DictConfig
 BAD_POINT_THRESHOLD = 0.9
 TOTAL_FRAMES = 360
 FPS = 24
-TRAILING = 0.1
+TRAILING_PLOT = 0.1
+TRAILING_CUMMEAN = 200
 
 
 def animate_plot(t, data_plot):
@@ -35,7 +36,7 @@ def animate_plot(t, data_plot):
     # Update function for the plot based on slider value
     def update(val):
         x_max = slider.val / SLIDER_LENGTH * MAX_LIM
-        x_min = max(0, x_max - MAX_LIM * TRAILING)
+        x_min = max(0, x_max - MAX_LIM * TRAILING_PLOT)
         ax.set_xlim(x_min, x_max)
         fig.canvas.draw_idle()
 
@@ -63,7 +64,7 @@ def showcase(cfg: DictConfig):
     pl.seed_everything(cfg.general.seed)
     cfg.data.val_size = 0.01
     cfg.data.test_size = 0.98
-    cfg.data.max_dataset_length = 0.73
+    cfg.data.max_dataset_length = 0.76
     cfg.data.batch_size = 4096
     cfg.artifacts.enable_logger = False
     dm = MyDataModule(cfg)
@@ -87,8 +88,16 @@ def showcase(cfg: DictConfig):
     data_plot.append(
         ("bad point", (answers[:, input_end] > BAD_POINT_THRESHOLD).astype(int))
     )
-    data_plot.append(("prediction", answers[:, output_end]))
-    # TODO plot mean
+    # data_plot.append(("prediction", answers[:, output_end]))
+    pred_cumsum = np.cumsum(answers[:, output_end])
+    pred_cummean_trailing = (
+        pred_cumsum[TRAILING_CUMMEAN:] - pred_cumsum[:-TRAILING_CUMMEAN]
+    ) / TRAILING_CUMMEAN
+    pred_plot = np.concatenate(
+        (answers[:TRAILING_CUMMEAN, output_end], pred_cummean_trailing)
+    )
+    data_plot.append(("prediction", pred_plot))
+    # TODO add time axis 1633824000.0 1663075700.0 using pandas.date_range
     animate_plot(t, data_plot)
 
 
