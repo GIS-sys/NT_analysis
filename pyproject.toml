@@ -30,6 +30,7 @@ tritonclient = {extras = ["http"], version = "2.40.0"}
 train = "ntanalysis.commands:_train"
 infer = "ntanalysis.commands:_infer"
 prepare = "ntanalysis.commands:_prepare_data"
+showcase = "ntanalysis.commands:_showcase"
 
 [[tool.poetry.source]]
 name = "pytorch"
