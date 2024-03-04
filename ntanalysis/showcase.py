@@ -1,7 +1,10 @@
+from datetime import datetime
+
 import hydra
 import lightning.pytorch as pl
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 import torch
 from matplotlib.animation import FuncAnimation
 from matplotlib.widgets import Slider
@@ -12,7 +15,7 @@ from omegaconf import DictConfig
 
 
 BAD_POINT_THRESHOLD = 0.9
-TOTAL_FRAMES = 360
+TOTAL_FRAMES = 720
 FPS = 24
 TRAILING_PLOT = 0.1
 TRAILING_CUMMEAN = 200
@@ -21,23 +24,22 @@ TRAILING_CUMMEAN = 200
 def animate_plot(t, data_plot):
     # Main vars
     SLIDER_LENGTH = t.shape[0]
-    MAX_LIM = t[-1]
     # Create plot
     fig, ax = plt.subplots()
     plt.subplots_adjust(bottom=0.25)
     # Initial plot
     for label, datum in data_plot:
         ax.plot(t, datum, label=label)
-    ax.set_xlim(0, MAX_LIM)
+    ax.set_xlim(t[0], t[1])
     # Slider
     ax_slider = plt.axes([0.1, 0.1, 0.8, 0.05])
     slider = Slider(ax_slider, "X Max", 0, SLIDER_LENGTH, valinit=0)
 
     # Update function for the plot based on slider value
     def update(val):
-        x_max = slider.val / SLIDER_LENGTH * MAX_LIM
-        x_min = max(0, x_max - MAX_LIM * TRAILING_PLOT)
-        ax.set_xlim(x_min, x_max)
+        x_max = slider.val
+        x_min = max(0, x_max - int(SLIDER_LENGTH * TRAILING_PLOT))
+        ax.set_xlim(t[x_min], t[x_max])
         fig.canvas.draw_idle()
 
     slider.on_changed(update)
@@ -80,7 +82,13 @@ def showcase(cfg: DictConfig):
     answers = np.concatenate(answers)
     print(answers)
 
-    t = np.linspace(0, 1, answers.shape[0])
+    # TODO FIX TIME AXIS INTERVALS IF NEEDED
+    # t = np.linspace(0, 1, answers.shape[0])
+    t = pd.date_range(
+        datetime.fromtimestamp(1633824000),
+        datetime.fromtimestamp(1664613100),
+        answers.shape[0],
+    )
     data_plot = []
     input_end = cfg.model.input_size * 10
     output_end = input_end + cfg.model.prediction_size * 1
@@ -97,7 +105,6 @@ def showcase(cfg: DictConfig):
         (answers[:TRAILING_CUMMEAN, output_end], pred_cummean_trailing)
     )
     data_plot.append(("prediction", pred_plot))
-    # TODO add time axis 1633824000.0 1663075700.0 using pandas.date_range
     animate_plot(t, data_plot)
 
 
