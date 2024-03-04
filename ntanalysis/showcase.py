@@ -41,7 +41,7 @@ def animate_plot(t, data_plot):
         slider.set_val(frame)
         return slider
 
-    FuncAnimation(
+    _ = FuncAnimation(
         fig,
         update_animation,
         frames=np.arange(0, SLIDER_LENGTH + 1, SLIDER_LENGTH // TOTAL_FRAMES),
