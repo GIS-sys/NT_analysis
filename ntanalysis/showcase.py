@@ -11,10 +11,13 @@ from ntanalysis.utils import get_default_trainer
 from omegaconf import DictConfig
 
 
+BAD_POINT_THRESHOLD = 0.9
+TOTAL_FRAMES = 360
+FPS = 24
+TRAILING = 0.1
+
+
 def animate_plot(t, data_plot):
-    TOTAL_FRAMES = 240
-    FPS = 24
-    TRAILING = 0.1
     # Main vars
     SLIDER_LENGTH = t.shape[0]
     MAX_LIM = t[-1]
@@ -81,8 +84,10 @@ def showcase(cfg: DictConfig):
     input_end = cfg.model.input_size * 10
     output_end = input_end + cfg.model.prediction_size * 1
     data_plot.append(("output", answers[:, input_end]))
+    data_plot.append(
+        ("bad point", (answers[:, input_end] > BAD_POINT_THRESHOLD).astype(int))
+    )
     data_plot.append(("prediction", answers[:, output_end]))
-    # TODO add bad points
     # TODO plot mean
     animate_plot(t, data_plot)
 
