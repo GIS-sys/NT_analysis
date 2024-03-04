@@ -2,13 +2,13 @@
 
 artifacts:
     enable_logger: true
-    experiment_name: predict_nt_overnight
+    experiment_name: predict_nt_normal
 
 data:
-    batch_size: 512
+    batch_size: 256
     max_dataset_length: 0.75
 
 train:
     num_warmup_steps: 4800
-    num_training_steps: 60000
+    num_training_steps: 20000
     log_every_n_steps: 512
