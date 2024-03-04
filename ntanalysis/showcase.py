@@ -15,11 +15,13 @@ from omegaconf import DictConfig
 
 
 BAD_POINT_THRESHOLD = 0.9
+BAD_POINT_HEIGHT = 2
+Y_AXIS = [0, 1.1]
 TOTAL_FRAMES = 720
 FPS = 24
 TRAILING_PLOT = 0.1
-TRAILING_CUMMEAN = 2000
-ZIGZAG_THRESHOLDS = [(1, 0.4), (1, 0.8), (-1, 0.2)]
+TRAILING_CUMMEAN = 1000
+ZIGZAG_THRESHOLDS = [(1, 0.4), (1, 0.8), (-1, 0.32)]
 ARROW_PROPS = {"width": 1}
 
 
@@ -52,6 +54,7 @@ def animate_plot(t, data_plot, zigzag_base_data):
             str(condition), (t[pos], zigzag_base_data[pos]), arrowprops=ARROW_PROPS
         )
     ax.set_xlim(t[0], t[1])
+    ax.set_ylim(Y_AXIS)
     # Slider
     ax_slider = plt.axes([0.1, 0.1, 0.8, 0.05])
     slider = Slider(ax_slider, "X Max", 0, SLIDER_LENGTH, valinit=0)
@@ -115,7 +118,10 @@ def showcase(cfg: DictConfig):
     output_end = input_end + cfg.model.prediction_size * 1
     data_plot.append(("output", answers[:, input_end]))
     data_plot.append(
-        ("bad point", (answers[:, input_end] > BAD_POINT_THRESHOLD).astype(int))
+        (
+            "bad point",
+            (answers[:, input_end] > BAD_POINT_THRESHOLD).astype(int) * BAD_POINT_HEIGHT,
+        )
     )
     # data_plot.append(("prediction", answers[:, output_end]))
     pred_cumsum = np.cumsum(answers[:, output_end])
