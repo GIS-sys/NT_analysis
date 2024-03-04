@@ -115,7 +115,7 @@ def showcase(cfg: DictConfig):
     pl.seed_everything(cfg.general.seed)
     cfg.data.val_size = 0.01
     cfg.data.test_size = 0.98
-    cfg.data.max_dataset_length = 0.76
+    cfg.data.max_dataset_length = 0.75
     cfg.data.batch_size = 4096
     cfg.artifacts.enable_logger = False
     dm = MyDataModule(cfg)

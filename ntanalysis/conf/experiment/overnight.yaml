@@ -6,7 +6,7 @@ artifacts:
 
 data:
     batch_size: 512
-    max_dataset_length: 0.73
+    max_dataset_length: 0.75
 
 train:
     num_warmup_steps: 4800
