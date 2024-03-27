@@ -41,12 +41,9 @@ class Preprocessor:
 
     def to_datatypes(self):
         # time column - to datetime
-        self.data.index = pd.to_datetime(pd.to_numeric(self.data.index) // 1000)
-        self.data[COLUMN_TIME] = self.data.index
+        self.data.index = pd.to_datetime(pd.to_numeric(self.data.index) // 1000, unit="s")
         # other columns to float, ignoring weird values
         for col in tqdm(self.data.columns):
-            if col == COLUMN_TIME:
-                pass
             self.data[col] = self.data[col].apply(pd.to_numeric, errors="coerce")
         return self
 
@@ -90,13 +87,12 @@ def prepare(cfg: DictConfig):
     print(preprocessor.data)
     # process data
     preprocessor.to_datatypes()
-    print(preprocessor.data.dtypes)
     preprocessor.normalize()
     preprocessor.sort_columns()
     preprocessor.sort_index()
     preprocessor.fill_nans()
     preprocessor.expand_columns()
-    print(preprocessor.data.head(20))
+    print(preprocessor.data)
     # save to file
     preprocessor.to_csv(cfg.data.csv_path)
     # plot

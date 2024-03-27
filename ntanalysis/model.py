@@ -13,7 +13,7 @@ class MyModel(pl.LightningModule):
         self.save_hyperparameters()
         self.cfg = cfg
         self.linear_relu_stack = nn.Sequential(
-            nn.Linear(cfg.model.input_size * 10, cfg.model.layer_scale),
+            nn.Linear(cfg.model.input_size * 369, cfg.model.layer_scale),
             nn.LeakyReLU(),
             nn.Linear(cfg.model.layer_scale, 2 * cfg.model.layer_scale),
             nn.LeakyReLU(),
