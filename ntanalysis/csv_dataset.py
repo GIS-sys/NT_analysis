@@ -30,13 +30,19 @@ class CsvDataset(torch.utils.data.Dataset):
         max_length=None,
         transform=None,
     ):
+        # TODO
+        drop_columns = ["TIME"]
+        categorial_columns = ["TIME_dow"]
+        # TODO
         print("Reading dataset from csv...")
         raw_df = pd.read_csv(csv_path)
-        # remove time column
-        tmp_df = raw_df.drop(["TIME"], axis=1)
-        # convert day of weeks to one-hot
-        one_hot = pd.get_dummies(tmp_df["TIME_dow"])
-        tmp_df = tmp_df.drop(["TIME_dow"], axis=1).join(one_hot)
+        # remove columns
+        tmp_df = raw_df.drop(drop_columns, axis=1)
+        # convert to one-hot
+        for col in categorial_columns:
+            one_hot = pd.get_dummies(tmp_df[col])
+            tmp_df = tmp_df.drop([col], axis=1).join(one_hot)
+        # to numpy
         raw_np = tmp_df.to_numpy().astype(np.float32)
         # stack inputs
         inputs = []
@@ -44,7 +50,6 @@ class CsvDataset(torch.utils.data.Dataset):
             start = i * input_gap
             rest = (input_size - 1) * input_gap - start + 1
             inputs.append(raw_np[start:-rest, :])
-        print(len(inputs), len(inputs[0]), len(inputs[0][0]))
         # stack outputs
         outputs = []
         for i in range(prediction_size):
@@ -61,7 +66,7 @@ class CsvDataset(torch.utils.data.Dataset):
         # stack
         self.data_in = np.concatenate(inputs, axis=1)
         self.data_out = np.concatenate(outputs, axis=1)
-        print("min and max times in dataset:", raw_df.iloc[0, 0], raw_df.iloc[0, -1])
+        print("min and max times in dataset:", raw_df.iloc[0, 0], raw_df.iloc[-1, 0])
 
     def __len__(self):
         return self.data_in.shape[0]

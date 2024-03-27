@@ -5,8 +5,7 @@ artifacts:
     experiment_name: predict_lpc_close
 
 data:
-    batch_size: 512
-    max_dataset_length: 0.75
+    batch_size: 8
     input_gap: 200
 
 train:
