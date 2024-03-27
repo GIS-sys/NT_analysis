@@ -1,3 +1,10 @@
-ntanalysis/tests/predict_test.py - rework tests to test different things, like prepare data etc
-ntanalysis/prepare_data.py - use config for consts
-use config for consts in infer and showcase
+ntanalysis/prepare_data.py
+
+ntanalysis/csv_dataset.py
+ntanalysis/model.py
+
+
+
+ntanalysis/data.py
+ntanalysis/infer.py
+ntanalysis/showcase.py

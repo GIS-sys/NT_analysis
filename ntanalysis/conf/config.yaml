@@ -15,7 +15,7 @@ artifacts:
         path: data/
         name: model
     enable_logger: true
-    experiment_name: predict_nt
+    experiment_name: predict_lpc
     mlflow_tracking_uri: "file:./.logs/my-mlflow-logs"
     #mlflow_tracking_uri: "http://gismlops.mlflow"
 

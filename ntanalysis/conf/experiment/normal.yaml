@@ -2,7 +2,7 @@
 
 artifacts:
     enable_logger: true
-    experiment_name: predict_nt_normal
+    experiment_name: predict_lpc_normal
 
 data:
     batch_size: 256

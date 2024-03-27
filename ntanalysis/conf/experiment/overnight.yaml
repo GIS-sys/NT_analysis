@@ -2,7 +2,7 @@
 
 artifacts:
     enable_logger: true
-    experiment_name: predict_nt_overnight
+    experiment_name: predict_lpc_overnight
 
 data:
     batch_size: 1024

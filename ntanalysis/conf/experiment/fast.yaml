@@ -2,7 +2,7 @@
 
 artifacts:
     enable_logger: false
-    experiment_name: predict_nt_fast
+    experiment_name: predict_lpc_fast
 
 data:
     batch_size: 64
