@@ -27,15 +27,19 @@ class CsvDataset(torch.utils.data.Dataset):
         input_gap,
         prediction_distance,
         prediction_size,
-        max_length=None,
+        max_length=1,
         transform=None,
     ):
         # TODO
         drop_columns = ["TIME"]
         categorial_columns = ["TIME_dow"]
+        timestamp_column = "TIME_seconds"
         # TODO
         print("Reading dataset from csv...")
         raw_df = pd.read_csv(csv_path)
+        # less data if needed
+        N = int(len(raw_df) * max_length)
+        raw_df = raw_df.iloc[:N, :]
         # remove columns
         tmp_df = raw_df.drop(drop_columns, axis=1)
         # convert to one-hot
@@ -55,10 +59,12 @@ class CsvDataset(torch.utils.data.Dataset):
         for i in range(prediction_size):
             start = i
             rest = prediction_size - start
+            timestamps_df = raw_df[[timestamp_column]][prediction_distance:-rest]
             outputs.append(
-                CsvDataset.target_function(raw_np[prediction_distance:-rest, 2:3])
+                CsvDataset.target_function(timestamps_df.to_numpy().astype(np.float32))
             )
-        inputs = [raw_np[prediction_distance:-prediction_size, 2:3]] + inputs
+        timestamps_df = raw_df[[timestamp_column]][prediction_distance:-prediction_size]
+        inputs = [timestamps_df.to_numpy().astype(np.float32)] + inputs
         # trim to match sizes
         length = min(inputs[0].shape[0], outputs[0].shape[0])
         inputs = [x[:length, :] for x in inputs]
