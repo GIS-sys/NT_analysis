@@ -29,7 +29,7 @@ callbacks:
 data:
     raw_csv: "data/raw.csv"
     csv_path: "data/out.csv"
-    batch_size: 2
+    batch_size: 16
     dataloader_num_wokers: 4
     val_size: 0.1
     test_size: 0.1

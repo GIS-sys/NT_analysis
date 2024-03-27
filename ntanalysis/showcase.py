@@ -15,7 +15,8 @@ from omegaconf import DictConfig
 
 BAD_POINT_HEIGHT = 2
 Y_AXIS = [0, 1.1]
-TOTAL_FRAMES = 720
+TOTAL_FRAMES = 360
+TOTAL_WAIT = 48
 FPS = 24
 TRAILING_PLOT = 0.1
 TRAILING_CUMMEAN = 1000
@@ -57,8 +58,8 @@ def animate_plot(t, pred_data, bad_points, output_data=None):
     # Initial plot
     ax.plot(t, pred_data, label="Предсказание")
     ax.plot(t, bad_points, label="Проблемы", linewidth=WIDTH_BAD_POINT)
-    # if output_data is not None:
-    #    ax.plot(t, output_data, label="Таргет")
+    if output_data is not None:
+        ax.plot(t, output_data, label="Таргет")
     for i, pos in enumerate(zigzag_positions):
         zigzag_i = i % len(ZIGZAG_THRESHOLDS)
         label = ZIGZAG_LABELS[zigzag_i](t[pos])
@@ -95,7 +96,7 @@ def animate_plot(t, pred_data, bad_points, output_data=None):
 
     slider.on_changed(update)
 
-    # Animation setting the slider values from 0 to 10 over time
+    # Animation setting the slider values
     def update_animation(frame):
         slider.set_val(frame)
         return slider
@@ -103,7 +104,12 @@ def animate_plot(t, pred_data, bad_points, output_data=None):
     _ = FuncAnimation(
         fig,
         update_animation,
-        frames=np.arange(0, SLIDER_LENGTH + 1, SLIDER_LENGTH // TOTAL_FRAMES),
+        frames=np.concatenate(
+            (
+                np.arange(0, SLIDER_LENGTH + 1, SLIDER_LENGTH // TOTAL_FRAMES),
+                np.ones(TOTAL_WAIT, dtype=int) * SLIDER_LENGTH,
+            )
+        ),
         interval=1000 // FPS,
         blit=False,
     )
