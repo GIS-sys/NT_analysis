@@ -55,10 +55,10 @@ def animate_plot(t, pred_data, bad_points, output_data=None):
     fig, ax = plt.subplots()
     plt.subplots_adjust(bottom=0.25)
     # Initial plot
-    # ax.plot(t, pred_data, label="Предсказание")
-    # ax.plot(t, bad_points, label="Проблемы", linewidth=WIDTH_BAD_POINT)
-    if output_data is not None:
-        ax.plot(t, output_data, label="Таргет")
+    ax.plot(t, pred_data, label="Предсказание")
+    ax.plot(t, bad_points, label="Проблемы", linewidth=WIDTH_BAD_POINT)
+    # if output_data is not None:
+    #    ax.plot(t, output_data, label="Таргет")
     for i, pos in enumerate(zigzag_positions):
         zigzag_i = i % len(ZIGZAG_THRESHOLDS)
         label = ZIGZAG_LABELS[zigzag_i](t[pos])
@@ -134,10 +134,16 @@ def showcase(cfg: DictConfig):
     answers = trainer.predict(model, datamodule=dm)
     answers = np.concatenate(answers)
 
+    # print(answers[:, 0].min(), answers[:, 0].max())
+    # print(answers[:, 1].min(), answers[:, 1].max())
+    # print(answers[:, cfg.model.input_size * target_columns_amount + 1].min(), answers[:, cfg.model.input_size * target_columns_amount + 1].max())
+    # print(answers[:, cfg.model.input_size * target_columns_amount + 2].min(), answers[:, cfg.model.input_size * target_columns_amount + 2].max())
+
     t = [datetime.fromtimestamp(int(x)) for x in answers[:, 0]]
     answers = answers[:, 1:]
     input_end = cfg.model.input_size * target_columns_amount
     output_end = input_end + cfg.model.prediction_size * 1
+
     bad_points = np.where(answers[:-1, input_end] - answers[1:, input_end] >= 0.2, 1, 0)
     bad_points = np.insert(bad_points, 0, np.zeros(1))
     pred_cumsum = np.cumsum(answers[:, output_end])

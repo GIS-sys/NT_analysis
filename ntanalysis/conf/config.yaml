@@ -34,8 +34,8 @@ data:
     val_size: 0.1
     test_size: 0.1
     max_dataset_length: 1
-    input_gap: 2000
-    prediction_distance: 7000
+    input_gap: 100
+    prediction_distance: 200
 
 general:
     seed: 42
