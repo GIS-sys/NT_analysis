@@ -35,7 +35,7 @@ data:
     test_size: 0.1
     max_dataset_length: 1
     input_gap: 100
-    prediction_distance: 144
+    prediction_distance: 200 #144
     # 1(60/5) * 12
 
 general:
