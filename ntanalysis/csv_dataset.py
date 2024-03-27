@@ -5,17 +5,28 @@ import torch
 
 class CsvDataset(torch.utils.data.Dataset):
     BAD_POINTS = [
-        1699233044,
-        1699252654,
-        1700359390,
-        1704946300,
+        1699463348.0,
+        1699765999.0,
+        1699784446.0,
+        1700265724.0,
+        1700292586.0,
+        1700512353.0,
+        1700576158.0,
+        1700703304.0,
+        1701717047.0,
+        1701724737.0,
+        1701865266.0,
+        1702440528.0,
+        1702796419.0,
+        1702826017.0,
+        1703228951.0,
     ]
 
     @staticmethod
     def target_function(times):
         result = np.zeros(shape=times.shape)
         for point in CsvDataset.BAD_POINTS:
-            attempt = np.exp(-0.00004 * (point - times) / 60)
+            attempt = np.exp(-0.0005 * (point - times) / 60)
             attempt[attempt > 1] = 0
             result += attempt
         return result.astype(np.float32)
@@ -73,6 +84,8 @@ class CsvDataset(torch.utils.data.Dataset):
         self.data_in = np.concatenate(inputs, axis=1)
         self.data_out = np.concatenate(outputs, axis=1)
         print("min and max times in dataset:", raw_df.iloc[0, 0], raw_df.iloc[-1, 0])
+        if raw_df.shape[0] > 3600:
+            print("3600th time:", raw_df.iloc[3600, 0])
 
     def __len__(self):
         return self.data_in.shape[0]
