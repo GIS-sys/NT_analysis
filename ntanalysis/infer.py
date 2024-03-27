@@ -13,6 +13,9 @@ from omegaconf import DictConfig
 
 @hydra.main(config_path="conf", config_name="config", version_base="1.3")
 def infer(cfg: DictConfig):
+    # TODO
+    target_columns_amount = 348
+    # TODO
     pl.seed_everything(cfg.general.seed)
     cfg.data.val_size = 0.01
     cfg.data.test_size = 0.98
@@ -33,6 +36,7 @@ def infer(cfg: DictConfig):
     answers = trainer.predict(model, datamodule=dm)
     answers = np.concatenate(answers)
     print(answers)
+    print(answers.shape)
 
     t = answers[:, 0]
     answers = answers[:, 1:]
@@ -59,7 +63,7 @@ def infer(cfg: DictConfig):
     #            ),
     #        )
     #    )
-    input_end = cfg.model.input_size * 10
+    input_end = cfg.model.input_size * target_columns_amount
     output_end = input_end + cfg.model.prediction_size * 1
     data_plot.append(("output", answers[:, input_end]))
     data_plot.append(("prediction", answers[:, output_end]))

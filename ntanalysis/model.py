@@ -10,7 +10,7 @@ from torch import nn
 class MyModel(pl.LightningModule):
     def __init__(self, cfg):
         # TODO
-        target_columns_amount = 369
+        target_columns_amount = 348
         # TODO
         super().__init__()
         self.save_hyperparameters()

@@ -56,6 +56,7 @@ class Preprocessor:
     def fill_nans(self):
         self.data.interpolate(inplace=True, method="time")
         self.data.fillna(inplace=True, method="bfill")
+        self.data = self.data.dropna(axis=1, how="all")
 
     def sort_columns(self):
         self.data = self.data.reindex(sorted(self.data.columns), axis=1)
