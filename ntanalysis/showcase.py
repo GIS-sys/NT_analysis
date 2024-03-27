@@ -35,7 +35,7 @@ ARROW_PROPS = {"width": 1}
 WIDTH_BAD_POINT = 10
 
 
-def animate_plot(t, pred_data, bad_points):
+def animate_plot(t, pred_data, bad_points, output_data=None):
     # Main vars
     SLIDER_LENGTH = len(t)
     # Calculate thresholds
@@ -55,8 +55,10 @@ def animate_plot(t, pred_data, bad_points):
     fig, ax = plt.subplots()
     plt.subplots_adjust(bottom=0.25)
     # Initial plot
-    ax.plot(t, pred_data, label="Предсказание")
-    ax.plot(t, bad_points, label="Проблемы", linewidth=WIDTH_BAD_POINT)
+    # ax.plot(t, pred_data, label="Предсказание")
+    # ax.plot(t, bad_points, label="Проблемы", linewidth=WIDTH_BAD_POINT)
+    if output_data is not None:
+        ax.plot(t, output_data, label="Таргет")
     for i, pos in enumerate(zigzag_positions):
         zigzag_i = i % len(ZIGZAG_THRESHOLDS)
         label = ZIGZAG_LABELS[zigzag_i](t[pos])
@@ -112,10 +114,12 @@ def animate_plot(t, pred_data, bad_points):
 
 @hydra.main(config_path="conf", config_name="config", version_base="1.3")
 def showcase(cfg: DictConfig):
+    # TODO
+    target_columns_amount = 347
+    # TODO
     pl.seed_everything(cfg.general.seed)
     cfg.data.val_size = 0.01
     cfg.data.test_size = 0.98
-    cfg.data.max_dataset_length = 0.75
     cfg.data.batch_size = 4096
     cfg.artifacts.enable_logger = False
     dm = MyDataModule(cfg)
@@ -130,13 +134,10 @@ def showcase(cfg: DictConfig):
     answers = trainer.predict(model, datamodule=dm)
     answers = np.concatenate(answers)
 
-    # TODO FIX TIME AXIS INTERVALS IF NEEDED
-    # t = np.linspace(0, 1, answers.shape[0])
     t = [datetime.fromtimestamp(int(x)) for x in answers[:, 0]]
     answers = answers[:, 1:]
-    input_end = cfg.model.input_size * 10
+    input_end = cfg.model.input_size * target_columns_amount
     output_end = input_end + cfg.model.prediction_size * 1
-    # data_plot.append(("output", answers[:, input_end]))
     bad_points = np.where(answers[:-1, input_end] - answers[1:, input_end] >= 0.2, 1, 0)
     bad_points = np.insert(bad_points, 0, np.zeros(1))
     pred_cumsum = np.cumsum(answers[:, output_end])
@@ -146,7 +147,12 @@ def showcase(cfg: DictConfig):
     pred_plot = np.concatenate(
         (answers[:TRAILING_CUMMEAN, output_end], pred_cummean_trailing)
     )
-    animate_plot(t, pred_plot, bad_points)
+    animate_plot(
+        t,
+        pred_plot,
+        bad_points,
+        answers[:, input_end],  # replace with None if no need in output
+    )
 
 
 if __name__ == "__main__":

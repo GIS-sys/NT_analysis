@@ -31,7 +31,7 @@ class CsvDataset(torch.utils.data.Dataset):
         transform=None,
     ):
         # TODO
-        drop_columns = ["TIME"]
+        drop_columns = ["TIME", "TIME_seconds"]
         categorial_columns = ["TIME_dow"]
         timestamp_column = "TIME_seconds"
         # TODO
