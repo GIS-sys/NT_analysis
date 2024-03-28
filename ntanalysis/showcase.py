@@ -14,14 +14,14 @@ from omegaconf import DictConfig
 
 
 # TODO
-BAD_POINT_HEIGHT = 2
-Y_AXIS = [0, 1.1]
+BAD_POINT_HEIGHT = 4
+Y_AXIS = [0, 2.1]
 TOTAL_FRAMES = 720
 TOTAL_WAIT = 48
 FPS = 24
 TRAILING_PLOT = 0.1
 TRAILING_CUMMEAN = 100
-ZIGZAG_THRESHOLDS = [(1, 0.4), (1, 0.8), (-1, 0.32)]
+ZIGZAG_THRESHOLDS = [(1, 0.6), (1, 0.8), (-1, 0.5)]
 ZIGZAG_COLORS = ["black", "orange", "red"]
 ZIGZAG_LABELS = [
     lambda _: "",
@@ -29,7 +29,7 @@ ZIGZAG_LABELS = [
     lambda d: (
         "ТРЕВОГА\n"
         + d.strftime("%Y/%m/%d, %H:%M:%S\n")
-        + (d + timedelta(days=4)).strftime("%Y/%m/%d, %H:%M:%S")
+        + (d + timedelta(hours=6)).strftime("%Y/%m/%d, %H:%M:%S")
     ),
 ]
 FONT_SIZE = 20
@@ -165,7 +165,7 @@ def showcase(cfg: DictConfig):
         t,
         pred_plot,
         bad_points,
-        answers[:, input_end],  # replace with None if no need in output
+        # answers[:, input_end],  # replace with None if no need in output
     )
 
 
