@@ -13,13 +13,14 @@ from ntanalysis.utils import get_default_trainer
 from omegaconf import DictConfig
 
 
+# TODO
 BAD_POINT_HEIGHT = 2
 Y_AXIS = [0, 1.1]
-TOTAL_FRAMES = 360
+TOTAL_FRAMES = 720
 TOTAL_WAIT = 48
 FPS = 24
 TRAILING_PLOT = 0.1
-TRAILING_CUMMEAN = 1000
+TRAILING_CUMMEAN = 100
 ZIGZAG_THRESHOLDS = [(1, 0.4), (1, 0.8), (-1, 0.32)]
 ZIGZAG_COLORS = ["black", "orange", "red"]
 ZIGZAG_LABELS = [
@@ -34,6 +35,7 @@ ZIGZAG_LABELS = [
 FONT_SIZE = 20
 ARROW_PROPS = {"width": 1}
 WIDTH_BAD_POINT = 10
+# TODO
 
 
 def animate_plot(t, pred_data, bad_points, output_data=None):
@@ -106,8 +108,8 @@ def animate_plot(t, pred_data, bad_points, output_data=None):
         update_animation,
         frames=np.concatenate(
             (
-                np.arange(0, SLIDER_LENGTH + 1, SLIDER_LENGTH // TOTAL_FRAMES),
-                np.ones(TOTAL_WAIT, dtype=int) * SLIDER_LENGTH,
+                np.arange(0, SLIDER_LENGTH, (SLIDER_LENGTH - 1) // TOTAL_FRAMES),
+                np.ones(TOTAL_WAIT, dtype=int) * (SLIDER_LENGTH - 1),
             )
         ),
         interval=1000 // FPS,
