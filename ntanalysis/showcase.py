@@ -13,12 +13,14 @@ from ntanalysis.utils import get_default_trainer
 from omegaconf import DictConfig
 
 
+# TODO
 BAD_POINT_HEIGHT = 2
 Y_AXIS = [0, 1.1]
 TOTAL_FRAMES = 720
+TOTAL_WAIT = 48
 FPS = 24
 TRAILING_PLOT = 0.1
-TRAILING_CUMMEAN = 1000
+TRAILING_CUMMEAN = 100
 ZIGZAG_THRESHOLDS = [(1, 0.4), (1, 0.8), (-1, 0.32)]
 ZIGZAG_COLORS = ["black", "orange", "red"]
 ZIGZAG_LABELS = [
@@ -33,9 +35,10 @@ ZIGZAG_LABELS = [
 FONT_SIZE = 20
 ARROW_PROPS = {"width": 1}
 WIDTH_BAD_POINT = 10
+# TODO
 
 
-def animate_plot(t, pred_data, bad_points):
+def animate_plot(t, pred_data, bad_points, output_data=None):
     # Main vars
     SLIDER_LENGTH = len(t)
     # Calculate thresholds
@@ -57,6 +60,8 @@ def animate_plot(t, pred_data, bad_points):
     # Initial plot
     ax.plot(t, pred_data, label="Предсказание")
     ax.plot(t, bad_points, label="Проблемы", linewidth=WIDTH_BAD_POINT)
+    if output_data is not None:
+        ax.plot(t, output_data, label="Таргет")
     for i, pos in enumerate(zigzag_positions):
         zigzag_i = i % len(ZIGZAG_THRESHOLDS)
         label = ZIGZAG_LABELS[zigzag_i](t[pos])
@@ -93,7 +98,7 @@ def animate_plot(t, pred_data, bad_points):
 
     slider.on_changed(update)
 
-    # Animation setting the slider values from 0 to 10 over time
+    # Animation setting the slider values
     def update_animation(frame):
         slider.set_val(frame)
         return slider
@@ -101,7 +106,12 @@ def animate_plot(t, pred_data, bad_points):
     _ = FuncAnimation(
         fig,
         update_animation,
-        frames=np.arange(0, SLIDER_LENGTH + 1, SLIDER_LENGTH // TOTAL_FRAMES),
+        frames=np.concatenate(
+            (
+                np.arange(0, SLIDER_LENGTH, (SLIDER_LENGTH - 1) // TOTAL_FRAMES),
+                np.ones(TOTAL_WAIT, dtype=int) * (SLIDER_LENGTH - 1),
+            )
+        ),
         interval=1000 // FPS,
         blit=False,
     )
@@ -112,10 +122,12 @@ def animate_plot(t, pred_data, bad_points):
 
 @hydra.main(config_path="conf", config_name="config", version_base="1.3")
 def showcase(cfg: DictConfig):
+    # TODO
+    target_columns_amount = 347
+    # TODO
     pl.seed_everything(cfg.general.seed)
     cfg.data.val_size = 0.01
     cfg.data.test_size = 0.98
-    cfg.data.max_dataset_length = 0.75
     cfg.data.batch_size = 4096
     cfg.artifacts.enable_logger = False
     dm = MyDataModule(cfg)
@@ -130,13 +142,16 @@ def showcase(cfg: DictConfig):
     answers = trainer.predict(model, datamodule=dm)
     answers = np.concatenate(answers)
 
-    # TODO FIX TIME AXIS INTERVALS IF NEEDED
-    # t = np.linspace(0, 1, answers.shape[0])
+    # print(answers[:, 0].min(), answers[:, 0].max())
+    # print(answers[:, 1].min(), answers[:, 1].max())
+    # print(answers[:, cfg.model.input_size * target_columns_amount + 1].min(), answers[:, cfg.model.input_size * target_columns_amount + 1].max())
+    # print(answers[:, cfg.model.input_size * target_columns_amount + 2].min(), answers[:, cfg.model.input_size * target_columns_amount + 2].max())
+
     t = [datetime.fromtimestamp(int(x)) for x in answers[:, 0]]
     answers = answers[:, 1:]
-    input_end = cfg.model.input_size * 10
+    input_end = cfg.model.input_size * target_columns_amount
     output_end = input_end + cfg.model.prediction_size * 1
-    # data_plot.append(("output", answers[:, input_end]))
+
     bad_points = np.where(answers[:-1, input_end] - answers[1:, input_end] >= 0.2, 1, 0)
     bad_points = np.insert(bad_points, 0, np.zeros(1))
     pred_cumsum = np.cumsum(answers[:, output_end])
@@ -146,7 +161,12 @@ def showcase(cfg: DictConfig):
     pred_plot = np.concatenate(
         (answers[:TRAILING_CUMMEAN, output_end], pred_cummean_trailing)
     )
-    animate_plot(t, pred_plot, bad_points)
+    animate_plot(
+        t,
+        pred_plot,
+        bad_points,
+        answers[:, input_end],  # replace with None if no need in output
+    )
 
 
 if __name__ == "__main__":

@@ -9,11 +9,16 @@ from torch import nn
 
 class MyModel(pl.LightningModule):
     def __init__(self, cfg):
+        # TODO
+        target_columns_amount = 347
+        # TODO
         super().__init__()
         self.save_hyperparameters()
         self.cfg = cfg
         self.linear_relu_stack = nn.Sequential(
-            nn.Linear(cfg.model.input_size * 10, cfg.model.layer_scale),
+            nn.Linear(
+                cfg.model.input_size * target_columns_amount, cfg.model.layer_scale
+            ),
             nn.LeakyReLU(),
             nn.Linear(cfg.model.layer_scale, 2 * cfg.model.layer_scale),
             nn.LeakyReLU(),

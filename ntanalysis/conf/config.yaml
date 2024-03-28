@@ -15,7 +15,7 @@ artifacts:
         path: data/
         name: model
     enable_logger: true
-    experiment_name: predict_nt
+    experiment_name: predict_lpc
     mlflow_tracking_uri: "file:./.logs/my-mlflow-logs"
     #mlflow_tracking_uri: "http://gismlops.mlflow"
 
@@ -27,15 +27,16 @@ callbacks:
         lrs: 1e-3
 
 data:
-    raw_xlsx: "data/raw.xlsx"
+    raw_csv: "data/raw.csv"
     csv_path: "data/out.csv"
-    batch_size: 256
+    batch_size: 16
     dataloader_num_wokers: 4
     val_size: 0.1
     test_size: 0.1
-    max_dataset_length: 0.75
-    input_gap: 2000
-    prediction_distance: 7000
+    max_dataset_length: 1
+    input_gap: 100
+    prediction_distance: 200 #144
+    # 1(60/5) * 12
 
 general:
     seed: 42
@@ -43,7 +44,7 @@ general:
 model:
     input_size: 3
     prediction_size: 1
-    layer_scale: 50
+    layer_scale: 512
 
 train:
     learning_rate: 1e-2

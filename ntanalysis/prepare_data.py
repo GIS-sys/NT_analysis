@@ -4,39 +4,22 @@ from datetime import datetime
 import hydra
 import matplotlib.pyplot as plt
 import numpy as np
-import openpyxl
 import pandas as pd
 from omegaconf import DictConfig
 from tqdm import tqdm
 
 
-DEBUG_ONLY_FIRST_N_LINES = 999999
-if DEBUG_ONLY_FIRST_N_LINES is not None:
-    print(f"WARNING only {DEBUG_ONLY_FIRST_N_LINES=} lines will be processed")
-COLUMN_TRANSLATOR1 = {
-    "YLNG.33.615II00257.PV": "current",  # Сила тока электродвигателя,А
-    "YLNG.33.615VI00505.PV": "vibr_hor_1",  # Вибрация подшипника насоса горизонтальная 1
-    "YLNG.33.615VI00506.PV": "vibr_hor_2",  # Вибрация подшипника насоса горизонтальная 2
-    "YLNG.33.615TI00513.PV": "temp",  # Температура среды на входе насоса
-    "YLNG.33.615PZI00256.PV": "pres_in",  # Давление среды на входе насоса
-    "YLNG.33.615PI00295.PV": "pres_out",  # Давление среды после насоса
-    "YLNG.33.615PDI00254.PV": "diff",  # Перепад на входном стрейнере
-    "YLNG.33.615ZI00270.PV": "pos_high",  # Положение регулирующей арматуры на напоре
-    "YLNG.33.615ZI00219.PV": "pos_low",  # Положение регулирующей арматуры min-flow
-    "YLNG.33.615FI00270.PV": "consum",  # Расход
+COLUMN_TIME = "TIME"
+EPOCH_TIME = datetime(1970, 1, 1)
+
+COLUMN_TRANSLATOR = {
+    "Дата Время": COLUMN_TIME,
 }
 
 
 class SUFFIX:
-    TIME = "_time"
-    VAL = "_val"
     TIME_SECONDS = "_seconds"
     TIME_DAYOFWEEK = "_dow"
-
-
-COLUMN_TRANSLATOR2 = {"Время": SUFFIX.TIME, "Значение": SUFFIX.VAL}
-COLUMN_TIME = "TIME"
-EPOCH_TIME = datetime(1970, 1, 1)
 
 
 class Preprocessor:
@@ -44,58 +27,24 @@ class Preprocessor:
         self.data = None
 
     @staticmethod
-    def from_excel(filename):
+    def from_csv(filename):
         preprocessor = Preprocessor()
-        lines = Preprocessor.read_excel_gen(filename)
-        preprocessor.data = Preprocessor.gen_to_pd(lines, DEBUG_ONLY_FIRST_N_LINES)
+        preprocessor.data = pd.read_csv(
+            filename, skiprows=2, encoding="cp1251", on_bad_lines="skip"
+        )
         return preprocessor
 
-    @staticmethod
-    def read_excel_gen(filename):
-        book = openpyxl.load_workbook(filename=filename, read_only=True, data_only=True)
-        first_sheet = book.worksheets[0]
-        return first_sheet.values
+    def rename_columns(self):
+        self.data = self.data.rename(columns=COLUMN_TRANSLATOR)
+        self.data = self.data.set_index(COLUMN_TIME)
+        return self
 
-    @staticmethod
-    def gen_to_pd(rows_generator, nrows):
-        header_row_main = next(rows_generator)
-        header_row_time = next(rows_generator)
-        header_row = []
-        for i in range(len(header_row_main)):
-            x, y = header_row_main[i], header_row_time[i]
-            if x is None:
-                x = header_row_main[i - 1]
-            header_row.append(COLUMN_TRANSLATOR1[x] + COLUMN_TRANSLATOR2[y])
-        data_rows = []
-        for _, row in tqdm(
-            zip(range(nrows - 2), rows_generator, strict=False), total=nrows - 2
-        ):
-            row = [
-                x if x != "Bad Input" and x != "Error! Maximum number of rows" else None
-                for x in row
-            ]
-            data_rows.append(row)
-        return pd.DataFrame(data_rows, columns=header_row).iloc[:, 2:]
-
-    def to_common_time(self):
-        # create separate tables for each feature
-        columns = {}
-        for col in set(self.data):
-            if col is None or not col.endswith(SUFFIX.TIME):
-                continue
-            col_pref = col[: -len(SUFFIX.TIME)]
-            col_time = col_pref + SUFFIX.TIME
-            col_val = col_pref + SUFFIX.VAL
-            columns[col_pref] = self.data[[col_time, col_val]]
-            columns[col_pref] = columns[col_pref].rename(
-                columns={col_time: COLUMN_TIME, col_val: col_pref}
-            )
-            columns[col_pref].dropna(inplace=True, how="all")
-        # join dataframes for common timeline
-        result = list(columns.values())[0]
-        for dataframe in tqdm(list(columns.values())[1:]):
-            result = pd.merge(result, dataframe, on=COLUMN_TIME, how="outer")
-        self.data = result.set_index(COLUMN_TIME)
+    def to_datatypes(self):
+        # time column - to datetime
+        self.data.index = pd.to_datetime(pd.to_numeric(self.data.index) // 1000, unit="s")
+        # other columns to float, ignoring weird values
+        for col in tqdm(self.data.columns):
+            self.data[col] = self.data[col].apply(pd.to_numeric, errors="coerce")
         return self
 
     def normalize(self):
@@ -107,6 +56,7 @@ class Preprocessor:
     def fill_nans(self):
         self.data.interpolate(inplace=True, method="time")
         self.data.fillna(inplace=True, method="bfill")
+        self.data = self.data.dropna(axis=1, how="all")
 
     def sort_columns(self):
         self.data = self.data.reindex(sorted(self.data.columns), axis=1)
@@ -133,16 +83,17 @@ class Preprocessor:
 @hydra.main(config_path="conf", config_name="config", version_base="1.3")
 def prepare(cfg: DictConfig):
     # read
-    preprocessor = Preprocessor.from_excel(cfg.data.raw_xlsx)
-    # common timeline
-    preprocessor.to_common_time()
+    preprocessor = Preprocessor.from_csv(cfg.data.raw_csv)
+    preprocessor.rename_columns()
+    print(preprocessor.data)
     # process data
+    preprocessor.to_datatypes()
     preprocessor.normalize()
     preprocessor.sort_columns()
     preprocessor.sort_index()
     preprocessor.fill_nans()
     preprocessor.expand_columns()
-    print(preprocessor.data.head(20))
+    print(preprocessor.data)
     # save to file
     preprocessor.to_csv(cfg.data.csv_path)
     # plot
